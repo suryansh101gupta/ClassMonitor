@@ -4,6 +4,10 @@ import userModel from '../models/userModel.js';
 import transporter from '../config/nodemailer.js'
 import crypto  from 'crypto';
 
+import { PutObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import s3 from "../config/s3.js";
+
 export const register = async (req, res) => {
     console.log("req.body:", req.body);
     const {name, email, password} = req.body;
@@ -266,3 +270,58 @@ export const resetPassword = async (req, res) => {
         return res.json({success: false, message: error.message});
     }
 }
+
+
+export const getUploadUrl = async (req, res) => {
+  try {
+    const { fileName, fileType } = req.body;
+
+    if (!fileName || !fileType) {
+      return res.status(400).json({ success: false, message: "Missing file metadata" });
+    }
+
+    const uniqueKey = `users/${Date.now()}-${fileName}`;
+
+    const command = new PutObjectCommand({
+      Bucket: process.env.AWS_S3_BUCKET_NAME,
+      Key: uniqueKey,
+      ContentType: fileType
+    });
+
+    // Generate pre-signed URL (valid for 1 min)
+    const uploadUrl = await getSignedUrl(s3, command, { expiresIn: 60 });
+
+    return res.json({
+      success: true,
+      uploadUrl,
+      fileUrl: `https://${process.env.AWS_S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${uniqueKey}`
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+
+export const updatePhoto = async (req, res) => {
+  try {
+    const userId = req.body.userId || req.userId; // from userAuth
+    const { photoUrl } = req.body;
+
+    if (!photoUrl) {
+      return res.status(400).json({ success: false, message: "photoUrl is required" });
+    }
+
+    const user = await userModel.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    user.photoUrl = photoUrl;
+    await user.save();
+
+    return res.json({ success: true, message: "Photo updated successfully", photoUrl });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};

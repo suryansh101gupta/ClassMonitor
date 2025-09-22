@@ -14,6 +14,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    photoUrl: {
+        type: String,
+        default: ''
+    },
     verifyOtp: {
         type: String,
         default: ''
