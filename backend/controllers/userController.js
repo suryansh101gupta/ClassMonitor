@@ -3,13 +3,14 @@ import jwt from 'jsonwebtoken';
 import userModel from '../models/userModel.js';
 import transporter from '../config/nodemailer.js'
 import crypto  from 'crypto';
+import { EMAIL_VERIFY_TEMPLATE, PASSWORD_RESET_TEMPLATE } from '../config/emailtemplates.js';
 
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import s3 from "../config/s3.js";
 
 export const register = async (req, res) => {
-    console.log("req.body:", req.body);
+    // console.log("req.body:", req.body);
     const {name, email, password} = req.body;
 
     if(!name || !email || !password){
@@ -55,7 +56,7 @@ export const register = async (req, res) => {
 }
 
 export const login = async (req, res) => {
-    console.log("req.body:", req.body);
+    // console.log("req.body:", req.body);
     const {email, password} = req.body;
 
     if(!email || !password){
@@ -111,7 +112,7 @@ export const logout = async (req, res) => {
 
 export const sendVerifyOtp = async (req, res) => {
     try{
-        console.log("send otp - req.body:", req.body);
+        // console.log("send otp - req.body:", req.body);
         const userId = req.userId;
         const user = await userModel.findById(userId);
 
@@ -130,7 +131,8 @@ export const sendVerifyOtp = async (req, res) => {
                 from: process.env.SENDER_EMAIL,
                 to: user.email,
                 subject: 'Acconut Verification OTP',
-                text: `Your OTP to verify your account is: ${otp}`
+                // text: `Your OTP to verify your account is: ${otp}`
+                html: EMAIL_VERIFY_TEMPLATE.replace("{{otp}}", otp).replace("{{email}}", user.email)
             }
             await transporter.sendMail(mailOption);
             res.json({ success: true, message: "verification otp sent" });
@@ -144,7 +146,7 @@ export const sendVerifyOtp = async (req, res) => {
 
 export const verifyEmail = async (req, res) => {
     // defensive logging to help debug clients that send no/invalid body
-    console.log("verifyEmail - req.body:", req.body);
+    // console.log("verifyEmail - req.body:", req.body);
     const { otp } = req.body;
     const userId = req.userId;
 
@@ -220,7 +222,8 @@ export const sendResetOtp = async (req, res) => {
             from: process.env.SENDER_EMAIL,
             to: user.email,
             subject: 'Password Reset OTP',
-            text: `Your OTP for resetting account password is: ${otp}`
+            // text: `Your OTP for resetting account password is: ${otp}`
+            html: PASSWORD_RESET_TEMPLATE.replace("{{otp}}", otp).replace("{{email}}", user.email)
         }
         await transporter.sendMail(mailOption);
 

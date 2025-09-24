@@ -11,7 +11,7 @@ export const getUserData = async(req, res) => {
             return res.json({success: false, message: "user not found"});
         }
 
-        return res.json({success: true, userData: {name: user.name, isAccountVerified: user.isAccountVerified }});
+        return res.json({success: true, userData: {name: user.name, isAccountVerified: user.isAccountVerified, photoUrl: user.photoUrl }});
 
     }catch(error){
         return res.json({success: false, message: error.message});
