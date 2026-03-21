@@ -9,6 +9,7 @@ export const AppContextProvider = (props) => {
     const backendUrl = import.meta.env.VITE_BACKEND_URL
     const [isLoggedin, setIsLoggedin] = useState(false)
     const [userData, setUserData] = useState(false)
+    const [adminData, setAdminData] = useState(false)
 
     axios.defaults.withCredentials = true;
 
@@ -24,6 +25,21 @@ export const AppContextProvider = (props) => {
         }
     }
 
+    const getAdminAuthState = async () => {
+        try{
+            const {data} = await axios.get(backendUrl + '/admin/is-admin-auth')
+            if(data.success){
+                setIsLoggedin(true)
+                getAdminData()
+            }
+        }catch(error){
+            // Don't show toast for 401 errors - it's expected when not logged in
+            if(error.response?.status !== 401){
+                toast.error(error.message)
+            }
+        }
+    }
+
     const getUserData = async () => {
         try{
             const {data} = await axios.get(backendUrl + '/user-data/data')
@@ -33,8 +49,22 @@ export const AppContextProvider = (props) => {
         }
     }
 
+    const getAdminData = async () => {
+        try{
+            const {data} = await axios.get(backendUrl + '/admin-data/data')
+            data.success ? setAdminData(data.adminData) : toast.error(data.message)
+        }catch(error){
+            console.error(error)
+            toast.error(error.message)
+        }
+    }
+
     useEffect(() => {
         getAuthState();
+    }, [])
+
+    useEffect(() => {
+        getAdminAuthState();
     }, [])
 
     const value = {
@@ -43,7 +73,10 @@ export const AppContextProvider = (props) => {
         setIsLoggedin,
         userData,
         setUserData,
-        getUserData 
+        getUserData,
+        adminData,
+        setAdminData,
+        getAdminData 
     }
 
     return(

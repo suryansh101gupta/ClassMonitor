@@ -6,6 +6,8 @@ import EmailVerify from './pages/EmailVerify'
 import UploadPhoto from './pages/UploadPhoto'
 import ResetPassword from './pages/ResetPassword'
 import { ToastContainer } from 'react-toastify';
+import AdminLogin from './pages/AdminLogin'
+import AdminHome from './pages/AdminHome'
 
 const App = () => {
   return (
@@ -13,7 +15,9 @@ const App = () => {
       <ToastContainer/>
       <Routes>
         <Route path='/' element={<Home/>}/>
+        <Route path='/admin-home' element={<AdminHome/>}/>
         <Route path='/login' element={<Login/>}/>
+        <Route path='/admin-login' element={<AdminLogin/>}/>
         <Route path='/email-verify' element={<EmailVerify/>}/>
         <Route path='/upload-photo' element={<UploadPhoto/>}/>
         <Route path='/reset-password' element={<ResetPassword/>}/>

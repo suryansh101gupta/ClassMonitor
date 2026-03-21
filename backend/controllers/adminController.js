@@ -172,3 +172,11 @@ export const logoutAdmin = async (req, res) => {
     });
   }
 };
+
+export const isAdminAuthenticated = async (req, res) => {
+  try {
+    return res.json({ success: true, message: "Admin logged in" });
+  } catch (error) {
+    return res.json({ success: false, message: error.message });
+  }
+};
