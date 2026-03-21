@@ -10,9 +10,21 @@ const userSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
+    roll_no: {
+        type: Number,
+        required: true,
+        unique: true
+    },
+    class_id:{
+        type: Number
+    },
     password: {
         type: String,
         required: true
+    },
+    s3key: {
+        type: String,
+        default: ''
     },
     photoUrl: {
         type: String,
@@ -38,7 +50,33 @@ const userSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
+    faceEncoding: { 
+        type: [Number], 
+        default: [] 
+    },
+    faceProcessed: {
+        type: Boolean,
+        default: false
+    },
+    faceProcessedAt: {
+        type: Date,
+        default: null
+    },
+    faceProcessingError: {
+        type: String,
+        default: ''
+    },
+    photoUploaded: {
+        type: Boolean,
+        default: false
+    },
+    photoVersion: {
+        type: Number,
+        default: 0
+    }
 })
+
+userSchema.index({ faceProcessed: 1, photoUploaded: 1 });
 
 
 const userModel = mongoose.models.user || mongoose.model('user', userSchema);

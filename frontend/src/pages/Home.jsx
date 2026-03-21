@@ -1,10 +1,10 @@
 import React from 'react'
-import Navbar from '../components/navbar'
+import Navbar from '../components/Navbar'
 import Header from '../components/Header'
 
 const Home = () => {
   return (
-    <div className='flex flex-col items-center  justify-center min-h-screen bg-[url("")] bg-cover bg-center'>
+    <div className='flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-200 to-purple-400'>
       <Navbar/>
       <Header/>
     </div>

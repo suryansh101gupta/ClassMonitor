@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { AppContext } from '../context/AppContext';
+import { useEffect } from 'react';
 
 const Login = () => {
 
@@ -17,6 +18,27 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  const [rollNo, setRollNo] = useState('');
+  const [classId, setClassId] = useState('');
+  const [classes, setClasses] = useState([]);
+
+  useEffect(() => {
+    const fetchClasses = async () => {
+        try {
+            const { data } = await axios.get(backendUrl + '/user/classes');
+            if (data.success) {
+                setClasses(data.classes);
+            }
+            console.log("Classes API response:", data);
+        } catch (err) {
+            toast.error("Failed to load classes");
+        }
+    };
+
+    fetchClasses();
+    // console.log("Classes API response:", data);
+  }, []);
+
   const onSubmitHandler = async (e)=>{
     try{
         e.preventDefault();
@@ -24,7 +46,7 @@ const Login = () => {
         axios.defaults.withCredentials = true;
 
         if(state === 'Sign Up'){
-            const {data} = await axios.post(backendUrl + '/user/register' ,{name, email, password})
+            const {data} = await axios.post(backendUrl + '/user/register' ,{name, email, password, roll_no: rollNo, class_id: classId})
 
             if(data.success){
                 setIsLoggedin(true);
@@ -67,6 +89,35 @@ const Login = () => {
                         value={name} 
                         type="text" placeholder="Full Name" required 
                         className='bg-transparent text-white outline-none rounded-sm px-2'/>
+                </div>
+            )}
+
+            {state === 'Sign Up' && (
+                <div className='mb-4 flex items-center gap-3 w-full px-5 py-2.5 rounded-full bg-[#333A5C]'>
+                    <i className="ri-building-line text-white text-2xl"></i>
+                    <select
+                        onChange={e => setClassId(e.target.value)}
+                        value={classId}
+                        required
+                        className='bg-[#333A5C] text-white outline-none w-full' >
+                        <option value="">Select Class</option>
+                        {classes.map((cls) => (
+                            <option key={cls.class_id} value={cls.class_id}>
+                            {cls.class_name}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+            )}
+
+            {state === 'Sign Up' && (
+                <div className='mb-4 flex items-center gap-3 w-full px-5 py-2.5 rounded-full bg-[#333A5C]'>
+                    <i className="ri-id-card-line text-white text-2xl"></i>
+                    <input 
+                        onChange={e => setRollNo(e.target.value)} 
+                        value={rollNo}
+                        type="text" placeholder="Roll Number" required 
+                        className='bg-transparent text-white outline-none rounded-sm px-2' />
                 </div>
             )}
             

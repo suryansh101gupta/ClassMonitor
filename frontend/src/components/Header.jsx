@@ -10,8 +10,8 @@ const Header = () => {
   const {userData} =  useContext(AppContext);
 
   return (
-    <div className='flex flex-col items-center mt-20 px-4 text-center text-gray-800'>
-      <img src={assets.logo} alt="logo" className='w-36 h-36 rounded-full mb-6'/>
+    <div className='flex flex-col items-center text-center text-gray-800 '>
+      <img src={assets.logo} alt="logo" className='w-36 h-36 rounded-full'/>
       <h1 className='flex items-center gap-2 text-xl sm:text-3xl font-medium mb-2'>
         Hello, {userData ? userData.name :'Name'}! <i className="ri-shake-hands-fill"></i>
       </h1>

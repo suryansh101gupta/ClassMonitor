@@ -57,22 +57,57 @@ const UploadPhoto = () => {
         toast.error("Please capture or select a photo first!");
         return;
       }
+      console.log("all good")
 
-      // 1. Get signed URL
-      const { data } = await axios.post(backendUrl + '/user/get-upload-url', {
+      // // 1. Get signed URL
+      // const { data } = await axios.post(backendUrl + '/user/get-upload-url', {
+      //   fileName: uploadFile.name,
+      //   fileType: uploadFile.type,
+      // });
+
+      // const { uploadUrl, fileUrl } = data;
+
+      // // 2. Upload file directly to S3
+      // await axios.put(uploadUrl, uploadFile, {
+      //   headers: { "Content-Type": uploadFile.type },
+      // });
+
+      // // 3. Update backend with file URL
+      // // await axios.post(backendUrl + '/user/update-photo', { photoUrl: fileUrl });
+      // const s3Key = fileUrl.split(`.amazonaws.com/`)[1]; // extract key from URL
+      // await axios.post(backendUrl + '/user/update-photo', { s3Key });
+
+      // 1. Get signed URL from backend
+      const res1 = await axios.post(backendUrl + '/user/get-upload-url', {
         fileName: uploadFile.name,
         fileType: uploadFile.type,
       });
 
-      const { uploadUrl, fileUrl } = data;
+      const uploadUrl = res1?.data?.uploadUrl;
+      const fileUrl = res1?.data?.fileUrl;
+      const s3KeyFromBackend = res1?.data?.s3Key;
+
+      if (!uploadUrl || !fileUrl) {
+        toast.error("Failed to get S3 upload URL. Try again.");
+        return;
+      }
 
       // 2. Upload file directly to S3
       await axios.put(uploadUrl, uploadFile, {
         headers: { "Content-Type": uploadFile.type },
       });
 
-      // 3. Update backend with file URL
-      await axios.post(backendUrl + '/user/update-photo', { photoUrl: fileUrl });
+      // 3. Use backend-provided s3Key or fallback to parsing from URL
+      const s3Key = s3KeyFromBackend || fileUrl?.split(".amazonaws.com/")[1];
+      if (!s3Key) {
+        toast.error("Invalid file URL from S3");
+        return;
+      }
+
+      // 4. Update backend with s3Key and photoUrl (triggers change stream in face-service)
+      await axios.post(backendUrl + '/user/update-photo', { s3Key, photoUrl: fileUrl });
+
+
 
       await getUserData();
       toast.success("Photo Uploaded Successfully!");

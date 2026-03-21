@@ -48,12 +48,15 @@ const Navbar = () => {
   }
 
   return (
-    <div className='w-full flex justify-between items-center p-4 sm:p-6 sm:px-24 absolute top-0'>
-      <img src={assets.logo} alt="logo" className='w-28 sm:w-32' />
+    <div className='w-full flex justify-between items-center p-4 sm:p-3 sm:px-12 absolute top-0'>
+      <div className='flex flex-row justify-between items-center gap-0'>
+        <img src={assets.logo} alt="logo" className='w-28 sm:w-32' />
+        <h1 className='text-6xl'>ClassMonitor</h1>
+      </div>
       {userData ? 
         <div className='w-14 h-14 flex justify-center items-center rounded-full bg-black text-white relative group'>
           {userData.name[0].toUpperCase()}
-          <div className='absolute hidden group-hover:block top-5 right-5 z-10 text-black rounded pt-10'>
+          <div className='absolute hidden group-hover:block top-0 right-10 z-10 text-black rounded pt-10'>
             <ul className='list-none m-0 p-2 bg-gray-300 text-sm rounded-lg flex flex-col gap-2'>
               {!userData.isAccountVerified && 
                 <li onClick={sendVerificationOtp} className='py-1 px-2 hover:bg-gray-400 cursor-pointer rounded-lg border'>Verify Email</li>

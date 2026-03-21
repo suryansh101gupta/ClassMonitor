@@ -1,0 +1,38 @@
+FROM python:3.9-slim
+
+# Install system dependencies for face_recognition
+RUN apt-get update && apt-get install -y \
+    cmake \
+    build-essential \
+    libopenblas-dev \
+    liblapack-dev \
+    libx11-dev \
+    libgtk-3-dev \
+    libavcodec-dev \
+    libavformat-dev \
+    libswscale-dev \
+    libjpeg-dev \
+    libpng-dev \
+    libtiff-dev \
+    libatlas-base-dev \
+    python3-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set working directory
+WORKDIR /app
+
+# Copy requirements and install Python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code
+COPY . .
+
+# Create environment variable file if it doesn't exist
+RUN echo "CLASS_ID=3" > .env
+
+# Expose port (if needed for any future web interface)
+EXPOSE 5000
+
+# Run the application
+CMD ["python", "main.py"]

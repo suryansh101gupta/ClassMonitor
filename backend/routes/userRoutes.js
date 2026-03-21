@@ -1,5 +1,5 @@
 import express from 'express';
-import { getUploadUrl, isAuthenticated, login, logout, register, resetPassword, sendResetOtp, sendVerifyOtp, updatePhoto, verifyEmail } from '../controllers/userController.js';
+import { getUploadUrl, isAuthenticated, login, logout, register, resetPassword, sendResetOtp, sendVerifyOtp, updatePhoto, verifyEmail, getClasses } from '../controllers/userController.js';
 import userAuth from '../middlewares/userAuth.js';
 
 
@@ -25,5 +25,6 @@ userRouter.post("/get-upload-url", userAuth, getUploadUrl);
 
 userRouter.post("/update-photo", userAuth, updatePhoto);
 
+userRouter.get("/classes", getClasses);
 
 export default userRouter;
