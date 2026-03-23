@@ -25,7 +25,7 @@ connectDB();
 
 connectRedis();
 
-const allowedOrigins = ['https://classmonitor-nodejs-backend.onrender.com/']
+const allowedOrigins = ['https://classmonitorvercel.vercel.app/']
 
 app.set("trust proxy", 1);
 
