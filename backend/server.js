@@ -16,6 +16,8 @@ import teacherRouter from "./routes/teacher_routes.js";
 import adminRouter from './routes/adminRoutes.js';
 import subjectRouter from './routes/subjectRoutes.js';
 import adminDataRouter from './routes/adminDataRoutes.js';
+import classRouter from './routes/classRoutes.js';
+import timetableRouter from './routes/timetableRoutes.js';
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -48,6 +50,10 @@ app.use('/admin', adminRouter);
 app.use('/admin-data', adminDataRouter);
 
 app.use("/subjects", subjectRouter);
+
+app.use("/classes", classRouter);
+
+app.use("/timetable", timetableRouter);
 
 global.activeLectureId = null;
 

@@ -32,6 +32,7 @@ const AdminLogin = () => {
                 getAdminData()
                 navigate('/admin')
             }else{
+                console.log("user /admin/register toast error")
                 toast.error(data.message)
             }
         }else{
@@ -43,11 +44,12 @@ const AdminLogin = () => {
                 // console.log(data)
                 navigate('/admin-home')
             }else{
-                console.log(data.message)
+                console.log("user /admin/login toast error")
                 toast.error(data.message)
             }
         }
     }catch(error){
+        console.log("user toast error")
         toast.error(error.message)
     }
   }

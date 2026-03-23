@@ -89,9 +89,79 @@ export const loginAdmin = async (req, res) => {
   }
 };
 
+// export const assignSubjectToTeacher = async (req, res) => {
+//   try {
+//     const { teacherId, subjectId } = req.body;
+
+//     // 1. Validate teacher
+//     const teacher = await teacherModel.findById(teacherId);
+//     if (!teacher) {
+//       return res.status(404).json({ success: false, message: "Teacher not found" });
+//     }
+
+//     // 2. Validate subject
+//     const subject = await subjectModel.findById(subjectId);
+//     if (!subject) {
+//       return res.status(404).json({ success: false, message: "Subject not found" });
+//     }
+
+//     // 3. Prevent duplicate (Mongo)
+//     if (teacher.subjects.includes(subjectId)) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Subject already assigned"
+//       });
+//     }
+
+//     // 4. Update Mongo
+//     teacher.subjects.push(subjectId);
+//     await teacher.save();
+
+//     try {
+//       // 5. Update SQL mapping
+//       const sql = `
+//         INSERT INTO teacher_subject (teacher_id, subject_id)
+//         VALUES (?, ?)
+//       `;
+
+//       await pool.execute(sql, [teacherId, subjectId]);
+
+//       return res.json({
+//         success: true,
+//         message: "Subject assigned successfully"
+//       });
+
+//     } catch (sqlError) {
+//       // Rollback Mongo
+//       teacher.subjects = teacher.subjects.filter(
+//         (id) => id.toString() !== subjectId
+//       );
+//       await teacher.save();
+
+//       return res.status(500).json({
+//         success: false,
+//         message: "SQL Error"
+//       });
+//     }
+
+//   } catch (err) {
+//     return res.status(500).json({
+//       success: false,
+//       message: err.message
+//     });
+//   }
+// };
+
 export const assignSubjectToTeacher = async (req, res) => {
   try {
-    const { teacherId, subjectId } = req.body;
+    const { teacherId, subjectIds } = req.body;
+
+    if (!teacherId || !subjectIds || !Array.isArray(subjectIds) || subjectIds.length === 0) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Teacher ID and array of subject IDs are required" 
+      });
+    }
 
     // 1. Validate teacher
     const teacher = await teacherModel.findById(teacherId);
@@ -99,42 +169,51 @@ export const assignSubjectToTeacher = async (req, res) => {
       return res.status(404).json({ success: false, message: "Teacher not found" });
     }
 
-    // 2. Validate subject
-    const subject = await subjectModel.findById(subjectId);
-    if (!subject) {
-      return res.status(404).json({ success: false, message: "Subject not found" });
+    // 2. Validate all subjects
+    const subjects = await subjectModel.find({ '_id': { $in: subjectIds } });
+    if (subjects.length !== subjectIds.length) {
+      return res.status(404).json({ 
+        success: false, 
+        message: "One or more subjects not found" 
+      });
     }
 
-    // 3. Prevent duplicate (Mongo)
-    if (teacher.subjects.includes(subjectId)) {
+    // 3. Filter out already assigned subjects
+    const newSubjectIds = subjectIds.filter(id => !teacher.subjects.includes(id));
+    
+    if (newSubjectIds.length === 0) {
       return res.status(400).json({
         success: false,
-        message: "Subject already assigned"
+        message: "All specified subjects are already assigned"
       });
     }
 
     // 4. Update Mongo
-    teacher.subjects.push(subjectId);
+    teacher.subjects.push(...newSubjectIds);
     await teacher.save();
 
     try {
-      // 5. Update SQL mapping
+      // 5. Update SQL mapping for new subjects only
+      const placeholders = newSubjectIds.map(() => '(?, ?)').join(', ');
+      const values = newSubjectIds.flatMap(subjectId => [teacherId, subjectId]);
+      
       const sql = `
         INSERT INTO teacher_subject (teacher_id, subject_id)
-        VALUES (?, ?)
+        VALUES ${placeholders}
       `;
 
-      await pool.execute(sql, [teacherId, subjectId]);
+      await pool.execute(sql, values);
 
       return res.json({
         success: true,
-        message: "Subject assigned successfully"
+        message: `${newSubjectIds.length} subjects assigned successfully`,
+        assignedSubjects: newSubjectIds
       });
 
     } catch (sqlError) {
       // Rollback Mongo
       teacher.subjects = teacher.subjects.filter(
-        (id) => id.toString() !== subjectId
+        id => !newSubjectIds.includes(id.toString())
       );
       await teacher.save();
 

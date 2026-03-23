@@ -37,7 +37,7 @@ FRAME_POST_INTERVAL = 60  # Post attendance only every N frames
 CLASS_ID = os.getenv("CLASS_ID")
 CAM_INDEX = int(os.getenv("CAM_INDEX", 0))
 
-print("CAM_INDEX:", CAM_INDEX, "CAM_ID:", CLASS_ID)
+print("CAM_INDEX:", CAM_INDEX, "CLASS_ID:", CLASS_ID)
 
 def get_mongo_client():
     if not MONGO_URI:
@@ -132,7 +132,7 @@ def main():
                 print("[CAME] posting to:", NODE_API, "students:", recognized_students)
                 response = requests.post(
                     NODE_API,
-                    json={"camera_id": CLASS_ID, "recognized_students": recognized_students},
+                    json={"class_id": CLASS_ID, "recognized_students": recognized_students},
                     timeout=0.5
                 )
                 print("[CAME] response:", response.json())

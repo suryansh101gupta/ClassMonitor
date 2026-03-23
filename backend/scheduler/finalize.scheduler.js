@@ -54,7 +54,7 @@ cron.schedule("* * * * *", async () => {
             const count = parseInt(data[String(student.roll_no)] || "0");
 
             // 4. Apply threshold logic
-            const status = count >= 300 ? 1 : 0;
+            const status = count >= 3 ? 1 : 0;
 
             // 5. Insert attendance with duplicate prevention
             await db.query(`

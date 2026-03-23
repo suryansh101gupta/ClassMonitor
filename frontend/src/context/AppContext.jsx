@@ -21,7 +21,9 @@ export const AppContextProvider = (props) => {
                 getUserData()
             }
         }catch(error){
-            toast.error(error.message)
+            if(error.response?.status !== 401){
+                toast.error(error.message)
+            }
         }
     }
 

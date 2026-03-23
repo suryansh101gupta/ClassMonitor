@@ -5,8 +5,7 @@ import { AppContext } from '../context/AppContext';
 
 const AdminHeader = () => {
 
-  // const navigate =  useNavigate();
-
+  const navigate =  useNavigate();
   const {adminData} =  useContext(AppContext);
 
   return (
@@ -18,10 +17,13 @@ const AdminHeader = () => {
       <h2 className='text-3xl sm:text-5xl font-semibold mb-4'>Welcome to ClassMonitor</h2>
       <p className='mb-8 max-w-md'>Welcome to ClassMonitor blah blah blah welcome blah blah</p>
       <button 
-        // onClick={() => {navigate('/login')}} 
+        onClick={() => {navigate('/admin-front-page')}} 
         className='border border-gray-500 rounded-full px-8 py-2.5 hover:bg-green-700 cursor-pointer'>
         Get Started
       </button>
+      <div>
+        <p>HELLO</p>
+      </div>
     </div>
   )
 }

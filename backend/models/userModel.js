@@ -16,7 +16,7 @@ const userSchema = new mongoose.Schema({
         unique: true
     },
     class_id:{
-        type: Number
+        type: String
     },
     password: {
         type: String,

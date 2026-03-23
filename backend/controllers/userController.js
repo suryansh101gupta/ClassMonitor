@@ -53,7 +53,7 @@ export const register = async (req, res) => {
         roll_no,
         name,
         email,
-        class_id,
+        String(class_id),
       ]);
 
       const token = jwt.sign({ id: savedUser._id }, process.env.JWT_SECRET, {

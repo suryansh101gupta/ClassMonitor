@@ -21,10 +21,12 @@ const Navbar = () => {
         navigate('/email-verify')
         toast.success(data.message)
       }else{
+        console.log("user /email-verify toast error")
         toast.error(data.message)
       }
 
     }catch(error){
+      console.log("user sendotp toast error")
       toast.error(error.message)
     }
   }
@@ -39,6 +41,7 @@ const Navbar = () => {
       navigate('/')
 
     }catch(error){
+      console.log("user logout toast error")
       toast.error(error.message) 
     }
   } 
@@ -70,9 +73,14 @@ const Navbar = () => {
 
           </div>
         </div>
-        : <button onClick={() => {navigate('/login')}} className='flex items-center gap-2 border border-gray-500 rounded-2xl px-6 px-2 hover:bg-green-700 transition-all cursor-pointer'>
-            Login <i className="ri-user-6-fill"></i>
-          </button>
+        : <div>
+            <button onClick={() => {navigate('/login')}} className='flex items-center gap-2 border border-gray-500 rounded-2xl px-6 px-2 hover:bg-green-700 transition-all cursor-pointer'>
+              Login <i className="ri-user-6-fill"></i>
+            </button>
+            <button onClick={() => {navigate('/admin-login')}} className='flex items-center gap-2 border border-gray-500 rounded-2xl px-6 px-2 hover:bg-green-700 transition-all cursor-pointer'>
+              Admin Login <i className="ri-user-6-fill"></i>
+            </button>
+          </div>
       }
     </div>
   )

@@ -67,3 +67,22 @@ export const createSubject = async (req, res) => {
     });
   }
 };
+
+export const getAllSubjects = async (req, res) => {
+  try {
+    const subjects = await subjectModel.find({}, '_id name'); 
+    // only fetch _id and name
+
+    res.status(200).json({
+      success: true,
+      data: subjects
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching subjects',
+      error: error.message
+    });
+  }
+};

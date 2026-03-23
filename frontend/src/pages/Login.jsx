@@ -53,6 +53,7 @@ const Login = () => {
                 getUserData()
                 navigate('/')
             }else{
+                console.log("user /user/register toast error")
                 toast.error(data.message)
             }
         }else{
@@ -63,11 +64,14 @@ const Login = () => {
                 getUserData()
                 navigate('/')
             }else{
+                console.log("user /user/login toast error")
                 toast.error(data.message)
             }
         }
     }catch(error){
-        toast.error(error.message)
+        const msg = error.response?.data?.message || error.message;
+        console.log("Full Error Object:", error.response);
+        toast.error(msg);
     }
   }
 

@@ -150,3 +150,20 @@ export const logoutTeacher = async (req, res) => {
     });
   }
 };
+
+export const getAllTeachers = async(req, res) => {
+  try{
+    const teachers = await teacherModel.find({}, '_id name');
+
+    res.status(200).json({
+      success: true,
+      data: teachers
+    })
+  }catch(error){
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching teachers',
+      error: error.message
+    });
+  }
+}
