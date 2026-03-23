@@ -25,7 +25,9 @@ connectDB();
 
 connectRedis();
 
-const allowedOrigins = ['http://localhost:5173']
+const allowedOrigins = ['https://classmonitor-nodejs-backend.onrender.com/']
+
+app.set("trust proxy", 1);
 
 app.use(express.json());
 app.use(cookieparser());
