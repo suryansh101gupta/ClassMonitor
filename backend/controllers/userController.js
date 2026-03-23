@@ -6,7 +6,7 @@ import crypto from "crypto";
 import {
   EMAIL_VERIFY_TEMPLATE,
   PASSWORD_RESET_TEMPLATE,
-} from "../config/emailtemplates.js";
+} from "../config/emailTemplates.js";
 
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
