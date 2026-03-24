@@ -25,6 +25,8 @@ const teacherSchema = new mongoose.Schema({
   { timestamps: true }
 )
 
+teacherSchema.index({ name: 'text' });
+
 const teacherModel = mongoose.models.teacher || mongoose.model('teacher', teacherSchema);
 
 export default teacherModel;

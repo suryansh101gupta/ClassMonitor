@@ -1,5 +1,6 @@
 import subjectModel from "../models/subjectModel.js";
 import pool from "../config/mysql.js";
+import { invalidateCache } from "../middlewares/redis_middleware.js";
 
 export const createSubject = async (req, res) => {
   try {
@@ -41,6 +42,9 @@ export const createSubject = async (req, res) => {
         savedSubject._id.toString(),
         name
       ]);
+
+      // Invalidate cache after successful save
+      await invalidateCache("all_subjects");
 
       return res.status(201).json({
         success: true,

@@ -1,8 +1,8 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import teacherModel from "../models/teacher_model.js";
-
 import pool from "../config/mysql.js";
+import { invalidateCache } from "../middlewares/redis_middleware.js";
 
 export const registerTeacher = async (req, res) => {
   try {
@@ -15,11 +15,12 @@ export const registerTeacher = async (req, res) => {
     // 1. Check existing
     const existing = await teacherModel.findOne({ email });
     if (existing) {
+      console.log("existing password:", existing?.password);
       return res.status(400).json({ msg: "Teacher already exists" });
     }
 
     // 2. Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 7);
 
     // 3. Save in MongoDB
     const teacher = new teacherModel({
@@ -44,7 +45,10 @@ export const registerTeacher = async (req, res) => {
             email
         ]);
 
-        const token = jwt.sign({ id: savedTeacher._id }, process.env.JWT_SECRET, {
+        // Invalidate cache after successful save
+        await invalidateCache("all_teachers");
+
+        const token = jwt.sign({ id: savedTeacher._id, role: "teacher" }, process.env.JWT_SECRET, {
             expiresIn: "7d",
         });
 
@@ -67,6 +71,7 @@ export const registerTeacher = async (req, res) => {
             message: "teacher registered successfully in both DBs",
             teacher: teacherResponse,
             mysqlId: result.insertId,
+            token: token
         });
 
     } catch (mysqlError) {
@@ -90,7 +95,7 @@ export const registerTeacher = async (req, res) => {
 };
 
 export const loginTeacher = async (req, res) => {
-  // console.log("req.body:", req.body);
+  console.log("req.body:", req.body);
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -101,21 +106,29 @@ export const loginTeacher = async (req, res) => {
   }
 
   try {
-    const teacher = await teacherModel.findOne({ email });
+    const teacher = await teacherModel.findOne({ email }).select("+password");
 
     if (!teacher) {
       return res.json({ success: false, message: "teacher does not exist" });
     }
 
+    console.log("Teacher document:", teacher);
+    console.log("Entered password:", password);
+    console.log("Stored password:", teacher?.password);
+
     const isMatch = await bcrypt.compare(password, teacher.password);
+    
 
     if (!isMatch) {
       return res.json({ success: false, message: "Invalid Email or Password" });
     }
 
-    const token = jwt.sign({ id: teacher._id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ id: teacher._id, role: "teacher" } , process.env.JWT_SECRET, {
       expiresIn: "7d",
     });
+
+    console.log( "req cookies", req.cookies );
+    console.log( "req cookies token", req.cookies.token );
 
     res.cookie("token", token, {
       httpOnly: true,
@@ -124,7 +137,9 @@ export const loginTeacher = async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    return res.json({ success: true, message: "logged in" });
+    console.log({ success: true, message: "logged in", token });
+
+    return res.json({ success: true, message: "logged in", token: token });
   } catch (error) {
     return res.json({ success: false, message: error.message });
   }

@@ -2,15 +2,16 @@ import express from 'express';
 import { registerTeacher, loginTeacher, getAllTeachers, logoutTeacher } from '../controllers/teacher_controller.js';
 import teacherAuth from '../middlewares/teacherAuth.js'
 import adminAuth from '../middlewares/adminAuth.js';
+import { cacheMiddleware } from '../middlewares/redis_middleware.js';
 
 const teacherRouter = express.Router();
 
 teacherRouter.post('/register', registerTeacher);
 
-teacherRouter.post('/login', teacherAuth, loginTeacher);
+teacherRouter.post('/login', loginTeacher);
 
 teacherRouter.post('/logout', teacherAuth, logoutTeacher);
 
-teacherRouter.get('/get-all-teachers', getAllTeachers);
+teacherRouter.get('/get-all-teachers', adminAuth, cacheMiddleware("all_teachers", 60), getAllTeachers);
 
 export default teacherRouter;

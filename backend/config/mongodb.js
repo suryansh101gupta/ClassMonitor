@@ -6,7 +6,15 @@ const connectDB = async () => {
         console.log("database connected");
     });
 
-    await mongoose.connect(`${process.env.MONGODB_URI}/ClassMonitor`);
+    try{
+        await mongoose.connect(`${process.env.MONGODB_URI}/ClassMonitor`, {
+            maxPoolSize: 400
+        });
+        console.log('MongoDB connection established with increased pool size');
+    }catch(error){
+        console.error('MongoDB connection error:', error);
+        process.exit(1);
+    }
 }
 
 export default connectDB

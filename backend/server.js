@@ -25,13 +25,13 @@ connectDB();
 
 connectRedis();
 
-const allowedOrigins = ['https://classmonitorvercel.vercel.app/']
+// const allowedOrigins = 'http://localhost:4000'
 
 app.set("trust proxy", 1);
 
 app.use(express.json());
 app.use(cookieparser());
-app.use(cors({origin:allowedOrigins, credentials:true}));
+app.use(cors({origin:'http://localhost:5173', credentials:true}));
 app.use(express.urlencoded({ extended: true }));
 
 // API Endpoints
@@ -41,7 +41,7 @@ app.use('/user', userRouter);
 
 app.use('/user-data', userDataRouter);
 
-app.use('/teacher', userRouter);
+// app.use('/teacher', userRouter);
 
 app.use("/attendance", attendanceRoutes);
 
@@ -59,4 +59,4 @@ app.use("/timetable", timetableRouter);
 
 global.activeLectureId = null;
 
-app.listen(port, () => console.log(`Server started on PORT : ${port}`));
+app.listen(port, "0.0.0.0",() => console.log(`Server started on PORT : ${port}`));

@@ -19,7 +19,7 @@ export const registerAdmin = async (req, res) => {
       return res.status(400).json({ success: false, message: "Admin already exists" });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 7);
 
     const admin = await adminModel.create({
       name,
@@ -55,6 +55,11 @@ export const loginAdmin = async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    const stats = await adminModel.find({ email }).explain("executionStats");
+
+    console.log(stats);
+
+
     const admin = await adminModel.findOne({ email });
     if (!admin) {
       return res.status(400).json({ success: false, message: "Invalid credentials" });
@@ -77,6 +82,7 @@ export const loginAdmin = async (req, res) => {
 
     res.json({
       success: true,
+      token: token,
       admin: {
         id: admin._id,
         name: admin.name,

@@ -1,0 +1,131 @@
+time="2026-03-24T05:21:46Z" level=info msg="✅  Test complete. All three role tokens were valid throughout." source=console
+
+
+  █ THRESHOLDS
+
+    custom_auth_latency
+    ✗ 'p(95)<850' p(95)=10459.701156
+
+    custom_db_read_latency
+    ✗ 'p(95)<450' p(95)=5312.276768
+
+    custom_db_write_latency
+    ✗ 'p(95)<650' p(95)=8163.23102
+
+    custom_error_rate
+    ✗ 'rate<0.03' rate=51.84%
+
+    http_req_duration
+    ✗ 'p(95)<550' p(95)=8.55s
+
+    http_req_failed
+    ✓ 'rate<0.03' rate=0.03%
+
+
+  █ TOTAL RESULTS
+
+    checks_total.......: 15488  47.829209/s
+    checks_succeeded...: 83.12% 12875 out of 15488
+    checks_failed......: 16.87% 2613 out of 15488
+
+    ✓ setup: admin login 200
+    ✓ setup: teacher login 200
+    ✓ setup: user login 200
+    ✗ admin register: status 201
+      ↳  99% — ✓ 303 / ✗ 1
+    ✗ admin register: success true
+      ↳  99% — ✓ 303 / ✗ 1
+    ✗ admin register: latency < 1s
+      ↳  23% — ✓ 71 / ✗ 233
+    ✓ admin login: status 200
+    ✓ admin login: success true
+    ✓ admin login: has token field
+    ✓ admin login: sets cookie
+    ✗ admin login: latency < 1s
+      ↳  27% — ✓ 83 / ✗ 221
+    ✓ admin is-auth: status 200
+    ✓ admin is-auth: success true
+    ✗ teacher register: status 201
+      ↳  99% — ✓ 303 / ✗ 1
+    ✗ teacher register: success true
+      ↳  99% — ✓ 303 / ✗ 1
+    ✗ teacher register: has token
+      ↳  99% — ✓ 303 / ✗ 1
+    ✗ teacher register: latency < 1s
+      ↳  24% — ✓ 75 / ✗ 229
+    ✓ teacher login: status 200
+    ✓ teacher login: success true
+    ✓ teacher login: has token field
+    ✓ teacher login: sets cookie
+    ✗ teacher login: latency < 1s
+      ↳  28% — ✓ 87 / ✗ 217
+    ✓ user login: status 200
+    ✓ user login: success true
+    ✓ user login: sets cookie
+    ✗ user login: latency < 1s
+      ↳  26% — ✓ 80 / ✗ 222
+    ✓ user is-auth: status 200
+    ✓ user is-auth: success true
+    ✓ subjects: status 200
+    ✓ subjects: has data array
+    ✗ subjects: latency < 500ms
+      ↳  25% — ✓ 76 / ✗ 224
+    ✓ teachers: status 200
+    ✓ teachers: has data array
+    ✗ teachers: latency < 500ms
+      ↳  26% — ✓ 78 / ✗ 221
+    ✓ admin-data: status 200
+    ✓ admin-data: success true
+    ✗ admin-data: latency < 500ms
+      ↳  29% — ✓ 87 / ✗ 210
+    ✓ classes: status 200
+    ✓ classes: has data array
+    ✗ classes: latency < 500ms
+      ↳  26% — ✓ 79 / ✗ 217
+    ✓ user-data: status 200
+    ✓ user-data: success true
+    ✗ user-data: latency < 500ms
+      ↳  32% — ✓ 95 / ✗ 201
+    ✓ create subject: status 201
+    ✓ create subject: success true
+    ✗ create subject: latency < 800ms
+      ↳  28% — ✓ 84 / ✗ 211
+    ✓ create class: status 201
+    ✓ create class: success true
+    ✗ create class: latency < 800ms
+      ↳  31% — ✓ 92 / ✗ 202
+    ✓ admin logout: status 200
+    ✓ admin logout: success true
+    ✓ teacher logout: status 200
+    ✓ teacher logout: success true
+    ✓ user logout: status 200
+    ✓ user logout: success true
+
+    CUSTOM
+    custom_auth_latency............: avg=3118.187327 min=1.721013  med=1594.8887   max=24408.861379 p(90)=8398.33807  p(95)=10459.701156
+    custom_db_read_latency.........: avg=1743.010652 min=2.467833  med=1249.641733 max=22121.147293 p(90)=4216.924078 p(95)=5312.276768
+    custom_db_write_latency........: avg=3196.422077 min=22.679034 med=2866.928366 max=9794.913118  p(90)=6867.538054 p(95)=8163.23102
+    custom_error_rate..............: 51.84% 2610 out of 5034
+
+    HTTP
+    http_req_duration..............: avg=2.65s       min=1.72ms    med=1.59s       max=24.4s        p(90)=6.74s       p(95)=8.55s
+      { expected_response:true }...: avg=2.65s       min=1.72ms    med=1.59s       max=24.4s        p(90)=6.74s       p(95)=8.55s
+    http_req_failed................: 0.03%  2 out of 5879
+    http_reqs......................: 5879   18.155212/s
+
+    EXECUTION
+    iteration_duration.............: avg=52.07s      min=5.33s     med=50.14s      max=1m59s        p(90)=1m40s       p(95)=1m46s
+    iterations.....................: 263    0.812182/s
+    vus............................: 9      min=1            max=100
+    vus_max........................: 100    min=100          max=100
+
+    NETWORK
+    data_received..................: 11 MB  35 kB/s
+    data_sent......................: 2.4 MB 7.6 kB/s
+
+
+
+
+running (5m23.8s), 000/100 VUs, 263 complete and 41 interrupted iterations
+default ✓ [ 100% ] 000/100 VUs  5m0s
+time="2026-03-24T05:21:46Z" level=error msg="thresholds on metrics 'custom_auth_latency, custom_db_read_latency, custom_db_write_latency, custom_error_rate, http_req_duration' have been crossed"

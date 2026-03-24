@@ -1,5 +1,6 @@
 import classModel from "../models/classModel.js";
 import pool from "../config/mysql.js";
+import { invalidateCache } from "../middlewares/redis_middleware.js";
 
 export const createClass = async (req, res) => {
     try {
@@ -9,15 +10,6 @@ export const createClass = async (req, res) => {
             return res.status(400).json({
                 success: false,
                 message: "Missing required fields"
-            });
-        }
-
-        // Check duplicate
-        const existing = await classModel.findOne({ name });
-        if (existing) {
-            return res.status(400).json({
-                success: false,
-                message: "Class already exists"
             });
         }
 
@@ -39,6 +31,9 @@ export const createClass = async (req, res) => {
                 savedClass._id.toString(),
                 name
             ]);
+
+            // Invalidate cache after successful save
+            await invalidateCache("all_classes");
 
             return res.status(201).json({
                 success: true,

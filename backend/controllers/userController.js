@@ -27,11 +27,17 @@ export const register = async (req, res) => {
       $or: [{ email }, { roll_no }],
     });
 
+    const stats = await userModel.find({
+      $or: [{ email }, { roll_no }],
+    }).explain("executionStats");
+
+    console.log(stats);
+
     if (existingUser) {
       return res.json({ success: false, message: "User already exists" });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 7);
 
     const user = new userModel({
       name,
@@ -56,7 +62,7 @@ export const register = async (req, res) => {
         String(class_id),
       ]);
 
-      const token = jwt.sign({ id: savedUser._id }, process.env.JWT_SECRET, {
+      const token = jwt.sign({ id: savedUser._id, role: "student" }, process.env.JWT_SECRET, {
         expiresIn: "7d",
       });
 
@@ -112,6 +118,11 @@ export const login = async (req, res) => {
   try {
     const user = await userModel.findOne({ email });
 
+    const stats = await userModel.find({ email }).explain("executionStats");
+
+    console.log(stats);
+
+
     if (!user) {
       return res.json({ success: false, message: "user does not exist" });
     }
@@ -122,7 +133,7 @@ export const login = async (req, res) => {
       return res.json({ success: false, message: "Invalid Email or Password" });
     }
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ id: user._id, role: "user" }, process.env.JWT_SECRET, {
       expiresIn: "7d",
     });
 

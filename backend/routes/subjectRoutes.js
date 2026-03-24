@@ -1,11 +1,12 @@
 import express from 'express';
 import { createSubject, getAllSubjects } from '../controllers/subjectController.js';
 import adminAuth from '../middlewares/adminAuth.js';
+import { cacheMiddleware } from '../middlewares/redis_middleware.js';
 
 const subjectRouter = express.Router();
 
-subjectRouter.post('/create-sub', createSubject);
+subjectRouter.post('/create-sub', adminAuth, createSubject);
 
-subjectRouter.get('/get-all-subjects', getAllSubjects);
+subjectRouter.get('/get-all-subjects', adminAuth, cacheMiddleware("all_subjects", 60), getAllSubjects);
 
 export default subjectRouter;

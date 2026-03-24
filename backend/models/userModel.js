@@ -77,7 +77,7 @@ const userSchema = new mongoose.Schema({
 })
 
 userSchema.index({ faceProcessed: 1, photoUploaded: 1 });
-
+userSchema.index({ name: "text", email: "text" });
 
 const userModel = mongoose.models.user || mongoose.model('user', userSchema);
 

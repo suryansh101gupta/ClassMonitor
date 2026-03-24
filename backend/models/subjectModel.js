@@ -12,6 +12,8 @@ const subjectSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+subjectSchema.index({ name: "text" })
+
 const subjectModel = mongoose.models.subject || mongoose.model("Subject", subjectSchema);
 
 export default subjectModel;
