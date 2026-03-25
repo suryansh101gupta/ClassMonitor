@@ -21,18 +21,19 @@ graph TB
         F[MongoDB Primary]
         G[Redis Cache]
         H[AWS S3 Storage]
+        I[MySQL Structured Data]
     end
     
     subgraph "ML Processing Layer"
-        I[Python Face Service]
-        J[Change Stream Listener]
-        K[Face Encoder]
-        L[S3 Image Processor]
+        J[Python Face Service]
+        K[Change Stream Listener]
+        L[Face Encoder]
+        M[S3 Image Processor]
     end
     
     subgraph "Background Services"
-        M[Lecture Scheduler]
-        N[Attendance Finalizer]
+        N[Lecture Scheduler]
+        O[Attendance Finalizer]
     end
     
     A --> C
@@ -41,14 +42,17 @@ graph TB
     D --> E
     E --> F
     C --> H
-    F --> J
-    J --> I
-    I --> K
-    I --> L
-    L --> H
-    I --> F
-    M --> F
+    F --> K
+    K --> J
+    J --> L
+    J --> M
+    M --> H
+    J --> F
+    C --> I
     N --> F
+    N --> I
+    O --> F
+    O --> I
 ```
 
 ## Performance Engineering
@@ -106,6 +110,12 @@ pipeline = [{"$match": {"operationType": "update"}}]
 
 ### Database Strategy
 
+**Polyglot Persistence Architecture:**
+- **MongoDB**: Document store for user profiles, face encodings, and unstructured data
+- **MySQL**: Relational database for structured attendance records and teacher assignments
+- **Redis**: In-memory caching for response acceleration
+- **Cross-Database Transactions**: Atomic operations with rollback mechanisms
+
 **MongoDB Optimization:**
 - **Connection Pooling**: `maxPoolSize: 400` for sustained concurrent connections
 - **Compound Indexing**: 
@@ -114,6 +124,12 @@ pipeline = [{"$match": {"operationType": "update"}}]
   userSchema.index({ name: "text", email: "text" });
   ```
 - **Change Streams**: Real-time event propagation to ML service
+
+**MySQL Integration:**
+- **Connection Pool**: `connectionLimit: 100` with unlimited queue for high concurrency
+- **Structured Data**: Teacher assignments, attendance records, class schedules
+- **Transactional Integrity**: Automatic MongoDB rollback on MySQL failures
+- **Dual-Write Pattern**: Synchronous writes to both databases with error handling
 
 **Redis Caching Layer:**
 - **Response Interception**: Middleware automatically caches successful responses
@@ -170,6 +186,10 @@ npm run dev
 ```
 MONGODB_URI=mongodb://localhost:27017
 REDIS_URL=redis://127.0.0.1:6379
+MYSQL_HOST=localhost
+MYSQL_USER=root
+MYSQL_PASSWORD=your_mysql_password
+MYSQL_DATABASE=attendance_system
 AWS_ACCESS_KEY_ID=your_key
 AWS_SECRET_ACCESS_KEY=your_secret
 AWS_REGION=us-east-1
@@ -195,6 +215,7 @@ LOG_LEVEL=INFO
 **Backend:**
 - Node.js 18+, Express.js 5.x
 - MongoDB 6.x with Change Streams
+- MySQL 8.x for structured data
 - Redis 7.x for caching
 - JWT authentication with HTTP-only cookies
 - AWS SDK v3 for S3 integration
@@ -231,9 +252,12 @@ LOG_LEVEL=INFO
 ## Scalability Features
 
 - **Horizontal Scaling**: Stateless API design with Redis session storage
+- **Polyglot Persistence**: MongoDB for documents, MySQL for relations, Redis for caching
 - **Database Sharding Ready**: MongoDB architecture supports shard key configuration
+- **Connection Pooling**: MongoDB (400) + MySQL (100) pools for high concurrency
 - **Microservice Decoupling**: Independent Python ML service can scale separately
 - **Caching Strategy**: Multi-layer caching with Redis for database and response caching
 - **Cloud Storage**: AWS S3 for unlimited image storage with CDN capabilities
+- **Cross-Database Transactions**: Atomic operations with automatic rollback mechanisms
 
 This system demonstrates production-grade engineering with event-driven architecture, comprehensive performance optimization, and robust error handling suitable for enterprise deployment.
