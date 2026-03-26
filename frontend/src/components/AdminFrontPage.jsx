@@ -7,6 +7,7 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import TimetableScheduler from './TimetableScheduler';
 import './AdminFrontPage.css';
+import { toast } from 'react-toastify';
 
 const AdminFrontPage = () => {
   const {backendUrl} =  useContext(AppContext);
@@ -24,6 +25,7 @@ const AdminFrontPage = () => {
   const [error, setError] = useState('');
   const [searchTeacher, setSearchTeacher] = useState('');
   const [searchSubject, setSearchSubject] = useState('');
+  const [subjectName, setSubjectName] = useState('');
   
   // Calendar state
   const [showCalendar, setShowCalendar] = useState(false);
@@ -38,7 +40,7 @@ const AdminFrontPage = () => {
     { id: 'assignments', label: 'Assign Subjects', icon: '📚' },
     { id: 'timetable', label: 'Timetable', icon: '📅' },
     { id: 'calendar', label: 'Calendar', icon: '📆' },
-    { id: 'subjects', label: 'All Subjects', icon: '📖' }
+    { id: 'subjects', label: 'Add Subjects', icon: '📖' }
   ];
 
   // Fetch teachers when assignment modal opens
@@ -77,6 +79,22 @@ const AdminFrontPage = () => {
       setLoading(false);
     }
   };
+
+  const createSubject = async () => {
+    try{
+      const response = await axios.post(backendUrl + '/subjects/create-sub', {name: subjectName});
+      if (response.data.success) {
+        toast.success("Subject Added");
+        setSubjectName("");
+      }else{
+        toast.error("Failed")
+      }
+    }catch(error){
+      setError('Failed to create subject');
+      console.error('Error creating subject:', error);
+      toast.error('Error creating subject');
+    }
+  }
 
   const handleTeacherClick = (teacher) => {
     setSelectedTeacher(teacher);
@@ -227,9 +245,18 @@ const AdminFrontPage = () => {
       case 'subjects':
         return (
           <div className="p-8">
-            <h2 className="text-3xl font-bold text-white mb-6">All Subjects</h2>
-            <div className="bg-gray-800 bg-opacity-50 backdrop-blur-sm rounded-xl shadow-lg p-6 border border-purple-500 border-opacity-20">
-              <p className="text-gray-400">Subject management functionality will be implemented here.</p>
+            <h2 className="text-3xl font-bold text-white mb-6">Create Subject</h2>
+            <div className="bg-gray-800 bg-opacity-50 backdrop-blur-sm rounded-xl shadow-lg p-6 border border-purple-500 border-opacity-20 ">
+              <div className="flex items-center gap-4">
+                <input
+                  type="text"
+                  placeholder="Enter subject name"
+                  className="px-4 py-2 rounded bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500 w-64"
+                  value={subjectName}
+                  onChange={(e) => setSubjectName(e.target.value)}
+                />
+                <button className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded" onClick={createSubject}> Create a new Subject </button>
+              </div>
             </div>
           </div>
         );

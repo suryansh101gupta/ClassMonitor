@@ -112,10 +112,6 @@ export const loginTeacher = async (req, res) => {
       return res.json({ success: false, message: "teacher does not exist" });
     }
 
-    console.log("Teacher document:", teacher);
-    console.log("Entered password:", password);
-    console.log("Stored password:", teacher?.password);
-
     const isMatch = await bcrypt.compare(password, teacher.password);
     
 
@@ -127,9 +123,6 @@ export const loginTeacher = async (req, res) => {
       expiresIn: "7d",
     });
 
-    console.log( "req cookies", req.cookies );
-    console.log( "req cookies token", req.cookies.token );
-
     res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -137,9 +130,7 @@ export const loginTeacher = async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    console.log({ success: true, message: "logged in", token });
-
-    return res.json({ success: true, message: "logged in", token: token });
+    return res.json({ success: true, message: "logged in" });
   } catch (error) {
     return res.json({ success: false, message: error.message });
   }
@@ -182,3 +173,71 @@ export const getAllTeachers = async(req, res) => {
     });
   }
 }
+
+export const getStudentsByLecture = async (req, res) => {
+  try {
+    const {
+      lecture_date,
+      class_id,
+      subject_id,
+      start_time,
+      end_time,
+    } = req.query;
+
+    const teacher_id = req.userId;
+
+    let query = `
+      SELECT a.student_id, a.status, l.lecture_id
+      FROM lectures l
+      JOIN attendance a ON l.lecture_id = a.lecture_id
+      WHERE 1=1
+    `;
+
+    let values = [];
+
+    if (lecture_date) {
+      query += " AND l.lecture_date = ?";
+      values.push(lecture_date);
+    }
+
+    if (class_id) {
+      query += " AND l.class_id = ?";
+      values.push(class_id);
+    }
+
+    if (subject_id) {
+      query += " AND l.subject_id = ?";
+      values.push(subject_id);
+    }
+
+    if (teacher_id) {
+      query += " AND l.teacher_id = ?";
+      values.push(teacher_id);
+    }
+
+    if (start_time) {
+      query += " AND l.start_time >= ?";
+      values.push(start_time);
+    }
+
+    if (end_time) {
+      query += " AND l.end_time <= ?";
+      values.push(end_time);
+    }
+
+    const [rows] = await pool.execute(query, values);
+
+    return res.status(200).json({
+      success: true,
+      count: rows.length,
+      data: rows,
+    });
+
+  } catch (error) {
+    console.error("Error fetching attendance:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server Error",
+    });
+  }
+};

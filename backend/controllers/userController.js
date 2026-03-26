@@ -438,3 +438,146 @@ export const getClasses = async (req, res) => {
     });
   }
 };
+
+export const getAttendanceByLecture = async (req, res) => {
+  try {
+    const {
+      lecture_date,
+      subject_id,
+      start_time,
+      end_time,
+    } = req.query;
+
+    const user_id = req.userId;
+
+    const { class_id } = await userModel.findOne({ _id: user_id });
+
+    let query = `
+      SELECT a.student_id, a.status, l.lecture_id
+      FROM lectures l
+      JOIN attendance a ON l.lecture_id = a.lecture_id
+      WHERE 1=1
+    `;
+
+    let values = [];
+
+    if (lecture_date) {
+      query += " AND l.lecture_date = ?";
+      values.push(lecture_date);
+    }
+
+    if (class_id) {
+      query += " AND l.class_id = ?";
+      values.push(class_id);
+    }
+
+    if (subject_id) {
+      query += " AND l.subject_id = ?";
+      values.push(subject_id);
+    }
+
+    if (user_id) {
+      query += " AND a.student_id = ?";
+      values.push(user_id);
+    }
+
+    if (start_time) {
+      query += " AND l.start_time >= ?";
+      values.push(start_time);
+    }
+
+    if (end_time) {
+      query += " AND l.end_time <= ?";
+      values.push(end_time);
+    }
+
+    const [rows] = await pool.execute(query, values);
+
+    return res.status(200).json({
+      success: true,
+      count: rows.length,
+      data: rows,
+    });
+
+  } catch (error) {
+    console.error("Error fetching attendance:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server Error",
+    });
+  }
+};
+
+export const getAttendanceByRange = async (req, res) => {
+  try {
+    const {
+      from_date,
+      to_date,
+      subject_id,
+      start_time,
+      end_time,
+    } = req.query;
+
+    const user_id = req.userId;
+
+    // Get class_id from MongoDB user
+    const user = await userModel.findOne({ _id: user_id });
+    const class_id = user?.class_id;
+
+    let query = `
+      SELECT a.student_id, a.status, l.lecture_id, l.lecture_date
+      FROM lectures l
+      JOIN attendance a ON l.lecture_id = a.lecture_id
+      WHERE 1=1
+    `;
+
+    let values = [];
+
+    // ✅ Date Range Filter
+    if (from_date && to_date) {
+      query += " AND l.lecture_date BETWEEN ? AND ?";
+      values.push(from_date, to_date);
+    }
+
+    if (class_id) {
+      query += " AND l.class_id = ?";
+      values.push(class_id);
+    }
+
+    if (subject_id) {
+      query += " AND l.subject_id = ?";
+      values.push(subject_id);
+    }
+
+    // ⚠️ This assumes user is a student
+    if (user_id) {
+      query += " AND a.student_id = ?";
+      values.push(user_id);
+    }
+
+    if (start_time) {
+      query += " AND l.start_time >= ?";
+      values.push(start_time);
+    }
+
+    if (end_time) {
+      query += " AND l.end_time <= ?";
+      values.push(end_time);
+    }
+
+    const [rows] = await pool.execute(query, values);
+
+    return res.status(200).json({
+      success: true,
+      count: rows.length,
+      data: rows,
+    });
+
+  } catch (error) {
+    console.error("Error fetching attendance by range:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server Error",
+    });
+  }
+};
