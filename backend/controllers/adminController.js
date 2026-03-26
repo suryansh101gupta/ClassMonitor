@@ -19,7 +19,11 @@ export const registerAdmin = async (req, res) => {
       return res.status(400).json({ success: false, message: "Admin already exists" });
     }
 
+<<<<<<< HEAD
     const hashedPassword = await bcrypt.hash(password, 7);
+=======
+    const hashedPassword = await bcrypt.hash(password, 10);
+>>>>>>> fae32d8 (Initial commit - teacher dashboard)
 
     const admin = await adminModel.create({
       name,
@@ -55,11 +59,14 @@ export const loginAdmin = async (req, res) => {
   try {
     const { email, password } = req.body;
 
+<<<<<<< HEAD
     const stats = await adminModel.find({ email }).explain("executionStats");
 
     console.log(stats);
 
 
+=======
+>>>>>>> fae32d8 (Initial commit - teacher dashboard)
     const admin = await adminModel.findOne({ email });
     if (!admin) {
       return res.status(400).json({ success: false, message: "Invalid credentials" });
@@ -82,7 +89,10 @@ export const loginAdmin = async (req, res) => {
 
     res.json({
       success: true,
+<<<<<<< HEAD
       token: token,
+=======
+>>>>>>> fae32d8 (Initial commit - teacher dashboard)
       admin: {
         id: admin._id,
         name: admin.name,

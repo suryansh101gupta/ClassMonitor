@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # ClassMonitor: Event-Driven Attendance System
 
 A high-performance, distributed attendance monitoring system built with event-driven microservices architecture, leveraging real-time face recognition, Redis caching, and cloud storage for scalable automated student tracking.
@@ -261,3 +262,6 @@ LOG_LEVEL=INFO
 - **Cross-Database Transactions**: Atomic operations with automatic rollback mechanisms
 
 This system demonstrates production-grade engineering with event-driven architecture, comprehensive performance optimization, and robust error handling suitable for enterprise deployment.
+=======
+## ClassMonitor
+>>>>>>> fae32d8 (Initial commit - teacher dashboard)

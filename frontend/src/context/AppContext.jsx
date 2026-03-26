@@ -1,5 +1,9 @@
 import axios from "axios";
+<<<<<<< HEAD
 import { createContext, use, useEffect, useState } from "react";
+=======
+import { createContext, useEffect, useState } from "react";
+>>>>>>> fae32d8 (Initial commit - teacher dashboard)
 import { toast } from "react-toastify";
 
 export const AppContext = createContext();
@@ -11,6 +15,12 @@ export const AppContextProvider = (props) => {
     const [userData, setUserData] = useState(false)
     const [adminData, setAdminData] = useState(false)
 
+<<<<<<< HEAD
+=======
+    // ✅ ADDED
+    const [teacherData, setTeacherData] = useState(false)
+
+>>>>>>> fae32d8 (Initial commit - teacher dashboard)
     axios.defaults.withCredentials = true;
 
     const getAuthState = async () => {
@@ -35,7 +45,25 @@ export const AppContextProvider = (props) => {
                 getAdminData()
             }
         }catch(error){
+<<<<<<< HEAD
             // Don't show toast for 401 errors - it's expected when not logged in
+=======
+            if(error.response?.status !== 401){
+                toast.error(error.message)
+            }
+        }
+    }
+
+    // ✅ ADDED
+    const getTeacherAuthState = async () => {
+        try{
+            const {data} = await axios.get(backendUrl + '/teacher/is-teacher-auth')
+            if(data.success){
+                setIsLoggedin(true)
+                getTeacherData()
+            }
+        }catch(error){
+>>>>>>> fae32d8 (Initial commit - teacher dashboard)
             if(error.response?.status !== 401){
                 toast.error(error.message)
             }
@@ -61,6 +89,19 @@ export const AppContextProvider = (props) => {
         }
     }
 
+<<<<<<< HEAD
+=======
+    // ✅ ADDED
+    const getTeacherData = async () => {
+        try{
+            const {data} = await axios.get(backendUrl + '/teacher-data/data')
+            data.success ? setTeacherData(data.teacherData) : toast.error(data.message)
+        }catch(error){
+            toast.error(error.message)
+        }
+    }
+
+>>>>>>> fae32d8 (Initial commit - teacher dashboard)
     useEffect(() => {
         getAuthState();
     }, [])
@@ -69,6 +110,14 @@ export const AppContextProvider = (props) => {
         getAdminAuthState();
     }, [])
 
+<<<<<<< HEAD
+=======
+    // ✅ ADDED
+    useEffect(() => {
+        getTeacherAuthState();
+    }, [])
+
+>>>>>>> fae32d8 (Initial commit - teacher dashboard)
     const value = {
         backendUrl,
         isLoggedin,
@@ -78,7 +127,16 @@ export const AppContextProvider = (props) => {
         getUserData,
         adminData,
         setAdminData,
+<<<<<<< HEAD
         getAdminData 
+=======
+        getAdminData,
+
+        // ✅ ADDED
+        teacherData,
+        setTeacherData,
+        getTeacherData
+>>>>>>> fae32d8 (Initial commit - teacher dashboard)
     }
 
     return(

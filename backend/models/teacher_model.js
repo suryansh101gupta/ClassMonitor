@@ -25,8 +25,11 @@ const teacherSchema = new mongoose.Schema({
   { timestamps: true }
 )
 
+<<<<<<< HEAD
 teacherSchema.index({ name: 'text' });
 
+=======
+>>>>>>> fae32d8 (Initial commit - teacher dashboard)
 const teacherModel = mongoose.models.teacher || mongoose.model('teacher', teacherSchema);
 
 export default teacherModel;

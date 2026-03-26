@@ -77,7 +77,11 @@ const userSchema = new mongoose.Schema({
 })
 
 userSchema.index({ faceProcessed: 1, photoUploaded: 1 });
+<<<<<<< HEAD
 userSchema.index({ name: "text", email: "text" });
+=======
+
+>>>>>>> fae32d8 (Initial commit - teacher dashboard)
 
 const userModel = mongoose.models.user || mongoose.model('user', userSchema);
 

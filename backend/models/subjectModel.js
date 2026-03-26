@@ -12,8 +12,11 @@ const subjectSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+<<<<<<< HEAD
 subjectSchema.index({ name: "text" })
 
+=======
+>>>>>>> fae32d8 (Initial commit - teacher dashboard)
 const subjectModel = mongoose.models.subject || mongoose.model("Subject", subjectSchema);
 
 export default subjectModel;

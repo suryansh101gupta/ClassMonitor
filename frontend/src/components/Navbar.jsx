@@ -52,10 +52,20 @@ const Navbar = () => {
 
   return (
     <div className='w-full flex justify-between items-center p-4 sm:p-3 sm:px-12 absolute top-0'>
+<<<<<<< HEAD
       <div className='flex flex-row justify-between items-center gap-0'>
         <img src={assets.logo} alt="logo" className='w-28 sm:w-32' />
         <h1 className='text-6xl'>ClassMonitor</h1>
       </div>
+=======
+      
+      {/* Logo + Title */}
+      <div className='flex flex-row items-center gap-2'>
+        <img src={assets.logo} alt="logo" className='w-28 sm:w-32' />
+        <h1 className='text-6xl'>ClassMonitor</h1>
+      </div>
+
+>>>>>>> fae32d8 (Initial commit - teacher dashboard)
       {userData ? 
         <div className='w-14 h-14 flex justify-center items-center rounded-full bg-black text-white relative group'>
           {userData.name[0].toUpperCase()}
@@ -68,6 +78,7 @@ const Navbar = () => {
                 <li onClick={uploadPhoto} className='py-1 px-2 hover:bg-gray-400 cursor-pointer rounded-lg whitespace-nowrap border'>Upload Photo</li>
               }
               <li onClick={logout} className='py-1 px-2 hover:bg-gray-400 cursor-pointer pr-10 rounded-lg border'>Logout</li>
+<<<<<<< HEAD
 
             </ul>
 
@@ -81,6 +92,33 @@ const Navbar = () => {
               Admin Login <i className="ri-user-6-fill"></i>
             </button>
           </div>
+=======
+            </ul>
+          </div>
+        </div>
+        : 
+        <div className='flex gap-4 items-center'>
+          
+          <button 
+            onClick={() => {navigate('/login')}} 
+            className='flex items-center gap-2 border border-gray-500 rounded-full px-6 py-2 hover:bg-green-700 transition-all duration-200 cursor-pointer hover:scale-105'>
+            Login <i className="ri-user-6-fill"></i>
+          </button>
+
+          <button 
+            onClick={() => {navigate('/admin-login')}} 
+            className='flex items-center gap-2 border border-gray-500 rounded-full px-6 py-2 hover:bg-green-700 transition-all duration-200 cursor-pointer hover:scale-105'>
+            Admin Login <i className="ri-user-6-fill"></i>
+          </button>
+
+          <button 
+            onClick={() => {navigate('/teacher-login')}} 
+            className='flex items-center gap-2 border border-gray-500 rounded-full px-6 py-2 hover:bg-green-700 transition-all duration-200 cursor-pointer hover:scale-105'>
+            Teacher Login <i className="ri-user-6-fill"></i>
+          </button>
+
+        </div>
+>>>>>>> fae32d8 (Initial commit - teacher dashboard)
       }
     </div>
   )

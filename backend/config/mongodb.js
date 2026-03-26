@@ -6,6 +6,7 @@ const connectDB = async () => {
         console.log("database connected");
     });
 
+<<<<<<< HEAD
     try{
         await mongoose.connect(`${process.env.MONGODB_URI}/ClassMonitor`, {
             maxPoolSize: 400
@@ -15,6 +16,9 @@ const connectDB = async () => {
         console.error('MongoDB connection error:', error);
         process.exit(1);
     }
+=======
+    await mongoose.connect(`${process.env.MONGODB_URI}/ClassMonitor`);
+>>>>>>> fae32d8 (Initial commit - teacher dashboard)
 }
 
 export default connectDB

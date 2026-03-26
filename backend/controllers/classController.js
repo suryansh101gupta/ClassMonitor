@@ -1,6 +1,9 @@
 import classModel from "../models/classModel.js";
 import pool from "../config/mysql.js";
+<<<<<<< HEAD
 import { invalidateCache } from "../middlewares/redis_middleware.js";
+=======
+>>>>>>> fae32d8 (Initial commit - teacher dashboard)
 
 export const createClass = async (req, res) => {
     try {
@@ -13,6 +16,18 @@ export const createClass = async (req, res) => {
             });
         }
 
+<<<<<<< HEAD
+=======
+        // Check duplicate
+        const existing = await classModel.findOne({ name });
+        if (existing) {
+            return res.status(400).json({
+                success: false,
+                message: "Class already exists"
+            });
+        }
+
+>>>>>>> fae32d8 (Initial commit - teacher dashboard)
         // Save in Mongo
         const newClass = new classModel({
             name
@@ -32,9 +47,12 @@ export const createClass = async (req, res) => {
                 name
             ]);
 
+<<<<<<< HEAD
             // Invalidate cache after successful save
             await invalidateCache("all_classes");
 
+=======
+>>>>>>> fae32d8 (Initial commit - teacher dashboard)
             return res.status(201).json({
                 success: true,
                 class_id: savedClass._id,

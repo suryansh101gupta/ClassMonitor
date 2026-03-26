@@ -9,6 +9,15 @@ import { ToastContainer } from 'react-toastify';
 import AdminLogin from './pages/AdminLogin'
 import AdminHome from './pages/AdminHome'
 import AdminFrontPage from './components/AdminFrontPage'
+<<<<<<< HEAD
+=======
+import TeacherLogin from "./pages/TeacherLogin";
+import TeacherFrontPage from './pages/TeacherFrontPage';
+
+
+
+
+>>>>>>> fae32d8 (Initial commit - teacher dashboard)
 
 const App = () => {
   return (
@@ -23,6 +32,13 @@ const App = () => {
         <Route path='/email-verify' element={<EmailVerify/>}/>
         <Route path='/upload-photo' element={<UploadPhoto/>}/>
         <Route path='/reset-password' element={<ResetPassword/>}/>
+<<<<<<< HEAD
+=======
+        <Route path="/teacher-login" element={<TeacherLogin />} />
+        <Route path="/teacher-dashboard" element={<TeacherFrontPage />} />
+        
+        
+>>>>>>> fae32d8 (Initial commit - teacher dashboard)
       </Routes>
     </div>
   )

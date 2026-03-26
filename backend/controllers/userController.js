@@ -27,17 +27,24 @@ export const register = async (req, res) => {
       $or: [{ email }, { roll_no }],
     });
 
+<<<<<<< HEAD
     const stats = await userModel.find({
       $or: [{ email }, { roll_no }],
     }).explain("executionStats");
 
     console.log(stats);
 
+=======
+>>>>>>> fae32d8 (Initial commit - teacher dashboard)
     if (existingUser) {
       return res.json({ success: false, message: "User already exists" });
     }
 
+<<<<<<< HEAD
     const hashedPassword = await bcrypt.hash(password, 7);
+=======
+    const hashedPassword = await bcrypt.hash(password, 10);
+>>>>>>> fae32d8 (Initial commit - teacher dashboard)
 
     const user = new userModel({
       name,
@@ -62,7 +69,11 @@ export const register = async (req, res) => {
         String(class_id),
       ]);
 
+<<<<<<< HEAD
       const token = jwt.sign({ id: savedUser._id, role: "student" }, process.env.JWT_SECRET, {
+=======
+      const token = jwt.sign({ id: savedUser._id }, process.env.JWT_SECRET, {
+>>>>>>> fae32d8 (Initial commit - teacher dashboard)
         expiresIn: "7d",
       });
 
@@ -118,11 +129,14 @@ export const login = async (req, res) => {
   try {
     const user = await userModel.findOne({ email });
 
+<<<<<<< HEAD
     const stats = await userModel.find({ email }).explain("executionStats");
 
     console.log(stats);
 
 
+=======
+>>>>>>> fae32d8 (Initial commit - teacher dashboard)
     if (!user) {
       return res.json({ success: false, message: "user does not exist" });
     }
@@ -133,7 +147,11 @@ export const login = async (req, res) => {
       return res.json({ success: false, message: "Invalid Email or Password" });
     }
 
+<<<<<<< HEAD
     const token = jwt.sign({ id: user._id, role: "user" }, process.env.JWT_SECRET, {
+=======
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+>>>>>>> fae32d8 (Initial commit - teacher dashboard)
       expiresIn: "7d",
     });
 

@@ -25,13 +25,21 @@ connectDB();
 
 connectRedis();
 
+<<<<<<< HEAD
 // const allowedOrigins = 'http://localhost:4000'
+=======
+const allowedOrigins = ['https://classmonitorvercel.vercel.app/']
+>>>>>>> fae32d8 (Initial commit - teacher dashboard)
 
 app.set("trust proxy", 1);
 
 app.use(express.json());
 app.use(cookieparser());
+<<<<<<< HEAD
 app.use(cors({origin:'http://localhost:5173', credentials:true}));
+=======
+app.use(cors({origin:allowedOrigins, credentials:true}));
+>>>>>>> fae32d8 (Initial commit - teacher dashboard)
 app.use(express.urlencoded({ extended: true }));
 
 // API Endpoints
@@ -41,7 +49,11 @@ app.use('/user', userRouter);
 
 app.use('/user-data', userDataRouter);
 
+<<<<<<< HEAD
 // app.use('/teacher', userRouter);
+=======
+app.use('/teacher', userRouter);
+>>>>>>> fae32d8 (Initial commit - teacher dashboard)
 
 app.use("/attendance", attendanceRoutes);
 
@@ -59,4 +71,8 @@ app.use("/timetable", timetableRouter);
 
 global.activeLectureId = null;
 
+<<<<<<< HEAD
 app.listen(port, "0.0.0.0",() => console.log(`Server started on PORT : ${port}`));
+=======
+app.listen(port, () => console.log(`Server started on PORT : ${port}`));
+>>>>>>> fae32d8 (Initial commit - teacher dashboard)

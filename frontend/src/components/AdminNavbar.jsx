@@ -80,6 +80,12 @@ const AdminNavbar = () => {
             <button onClick={() => {navigate('/admin-login')}} className='flex items-center gap-2 border border-gray-500 rounded-2xl px-6 px-2 hover:bg-green-700 transition-all cursor-pointer'>
               Admin Login <i className="ri-user-6-fill"></i>
             </button>
+<<<<<<< HEAD
+=======
+            <button onClick={() => {navigate('/teacher-login')}} className='flex items-center gap-2 border border-gray-500 rounded-2xl px-6 px-2 hover:bg-green-700 transition-all cursor-pointer'>
+              Teacher Login <i className="ri-user-6-fill"></i>
+            </button>
+>>>>>>> fae32d8 (Initial commit - teacher dashboard)
           </div>
       }
     </div>

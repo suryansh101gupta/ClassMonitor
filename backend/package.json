@@ -21,7 +21,10 @@
     "cors": "^2.8.5",
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
+<<<<<<< HEAD
     "ioredis": "^5.10.1",
+=======
+>>>>>>> fae32d8 (Initial commit - teacher dashboard)
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.18.1",
     "mysql2": "^3.20.0",

@@ -1,6 +1,9 @@
 import subjectModel from "../models/subjectModel.js";
 import pool from "../config/mysql.js";
+<<<<<<< HEAD
 import { invalidateCache } from "../middlewares/redis_middleware.js";
+=======
+>>>>>>> fae32d8 (Initial commit - teacher dashboard)
 
 export const createSubject = async (req, res) => {
   try {
@@ -43,9 +46,12 @@ export const createSubject = async (req, res) => {
         name
       ]);
 
+<<<<<<< HEAD
       // Invalidate cache after successful save
       await invalidateCache("all_subjects");
 
+=======
+>>>>>>> fae32d8 (Initial commit - teacher dashboard)
       return res.status(201).json({
         success: true,
         subject_id: savedSubject._id,
