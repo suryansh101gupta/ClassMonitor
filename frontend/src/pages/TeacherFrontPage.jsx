@@ -2,10 +2,13 @@ import React, { useContext, useState, useEffect } from 'react';
 import { AppContext } from '../context/AppContext';
 import axios from 'axios';
 import TimetableScheduler from "../components/TimetableScheduler";
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const TeacherFrontPage = () => {
 
-  const { backendUrl } = useContext(AppContext);
+  const navigate = useNavigate();
+  const { backendUrl, setIsLoggedin } = useContext(AppContext);
 
   const [classes, setClasses] = useState([]);
   const [subjects, setSubjects] = useState([]);
@@ -25,6 +28,7 @@ const TeacherFrontPage = () => {
 
   // ---------------- FETCH ----------------
   useEffect(() => {
+    axios.defaults.withCredentials = true;
     fetchClasses();
     fetchSubjects();
   }, []);
@@ -32,8 +36,9 @@ const TeacherFrontPage = () => {
   const fetchClasses = async () => {
     try {
       const res = await axios.get(`${backendUrl}/classes/get-all-classes`);
-      if (res.data.success) setClasses(res.data.data);
-    } catch {
+      if (res.data.success) setClasses(res.data.data || []);
+    } catch (err) {
+      console.error(err);
       setError('Failed to fetch classes');
     }
   };
@@ -41,9 +46,27 @@ const TeacherFrontPage = () => {
   const fetchSubjects = async () => {
     try {
       const res = await axios.get(`${backendUrl}/subjects/get-all-subjects`);
-      if (res.data.success) setSubjects(res.data.data);
-    } catch {
+      if (res.data.success) setSubjects(res.data.data || []);
+    } catch (err) {
+      console.error(err);
       setError('Failed to fetch subjects');
+    }
+  };
+
+  // ---------------- LOGOUT ----------------
+  const handleLogout = async () => {
+    try {
+      const { data } = await axios.post(`${backendUrl}/teacher/logout`);
+      if (data.success) {
+        setIsLoggedin(false);
+        toast.success("Logged out successfully");
+        navigate('/teacher-login');
+      } else {
+        toast.error(data.message);
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Logout failed");
     }
   };
 
@@ -72,13 +95,14 @@ const TeacherFrontPage = () => {
       });
 
       if (res.data.success) {
-        setAttendanceData(res.data.attendance);
+        setAttendanceData(res.data.attendance || []);
       } else {
         setAttendanceData([]);
         setError('No attendance found');
       }
 
-    } catch {
+    } catch (err) {
+      console.error(err);
       setError('Failed to fetch attendance');
     } finally {
       setLoading(false);
@@ -87,6 +111,33 @@ const TeacherFrontPage = () => {
 
   return (
     <div className="bg-gradient-to-br from-blue-200 to-purple-400 min-h-screen flex items-center justify-center p-4">
+
+      {/* 🔥 TOP BUTTONS */}
+      <div className='absolute top-5 right-5 flex gap-3'>
+
+        {/* Back */}
+        <button 
+          onClick={() => navigate(-1)} 
+          className='flex items-center gap-2 px-4 py-2 rounded-full 
+                     bg-[#333A5C] text-indigo-300 border border-indigo-500/30 
+                     hover:bg-indigo-600 hover:text-white transition'
+        >
+          <i className="ri-arrow-left-line"></i>
+          Back
+        </button>
+
+        {/* Logout */}
+        <button 
+          onClick={handleLogout} 
+          className='flex items-center gap-2 px-4 py-2 rounded-full 
+                     bg-[#333A5C] text-red-400 border border-red-500/30 
+                     hover:bg-red-600 hover:text-white transition'
+        >
+          <i className="ri-logout-box-r-line"></i>
+          Logout
+        </button>
+
+      </div>
 
       <div className="bg-slate-900 p-8 rounded-2xl shadow-xl w-full max-w-4xl text-indigo-300">
 
@@ -97,7 +148,6 @@ const TeacherFrontPage = () => {
         {/* FORM */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-          {/* CLASS DROPDOWN */}
           <div>
             <label className="text-white text-sm">Select Class</label>
             <select
@@ -107,7 +157,7 @@ const TeacherFrontPage = () => {
               className="w-full p-3 rounded bg-gray-800 text-white"
             >
               <option value="">Choose Class</option>
-              {classes.map(cls => (
+              {classes?.map(cls => (
                 <option key={cls._id} value={cls._id}>
                   {cls.name}
                 </option>
@@ -115,7 +165,6 @@ const TeacherFrontPage = () => {
             </select>
           </div>
 
-          {/* SUBJECT DROPDOWN */}
           <div>
             <label className="text-white text-sm">Select Subject</label>
             <select
@@ -125,7 +174,7 @@ const TeacherFrontPage = () => {
               className="w-full p-3 rounded bg-gray-800 text-white"
             >
               <option value="">Choose Subject</option>
-              {subjects.map(sub => (
+              {subjects?.map(sub => (
                 <option key={sub._id} value={sub._id}>
                   {sub.name}
                 </option>
@@ -133,7 +182,6 @@ const TeacherFrontPage = () => {
             </select>
           </div>
 
-          {/* DATE */}
           <div>
             <label className="text-white text-sm">Lecture Date</label>
             <input
@@ -145,7 +193,6 @@ const TeacherFrontPage = () => {
             />
           </div>
 
-          {/* START TIME */}
           <div>
             <label className="text-white text-sm">Start Time</label>
             <input
@@ -157,7 +204,6 @@ const TeacherFrontPage = () => {
             />
           </div>
 
-          {/* END TIME */}
           <div>
             <label className="text-white text-sm">End Time</label>
             <input
@@ -171,14 +217,12 @@ const TeacherFrontPage = () => {
 
         </div>
 
-        {/* ERROR */}
         {error && (
           <div className="bg-red-500 text-white p-2 rounded mt-4">
             {error}
           </div>
         )}
 
-        {/* BUTTONS */}
         <div className="flex gap-4 mt-6">
 
           <button
@@ -197,7 +241,6 @@ const TeacherFrontPage = () => {
 
         </div>
 
-        {/* TABLE */}
         {attendanceData.length > 0 && (
           <div className="mt-8 bg-gray-800 p-4 rounded-xl">
             <h3 className="text-white mb-3">Attendance Records</h3>
@@ -235,7 +278,6 @@ const TeacherFrontPage = () => {
 
       </div>
 
-      {/* TIMETABLE */}
       {showTimetableScheduler && (
         <TimetableScheduler onClose={() => setShowTimetableScheduler(false)} />
       )}

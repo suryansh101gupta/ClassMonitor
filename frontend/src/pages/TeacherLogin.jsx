@@ -65,6 +65,17 @@ const TeacherLogin = () => {
         <p className='text-center text-sm mb-6'>
           {state === 'Sign Up' ? 'Register as a Teacher' : 'Login to your Teacher account!'}
         </p>
+              {/* ✅ Back Button */}
+      <button 
+        onClick={() => navigate(-1)} 
+        className='absolute top-5 right-5 flex items-center gap-2 px-4 py-2 rounded-full 
+             bg-[#333A5C] text-indigo-300 border border-indigo-500/30 
+             shadow-md hover:bg-indigo-600 hover:text-white 
+             transition-all duration-300'
+>
+            <i className="ri-arrow-left-line text-lg"></i>
+            Back
+        </button>
 
         <form onSubmit={onSubmitHandler}>
 

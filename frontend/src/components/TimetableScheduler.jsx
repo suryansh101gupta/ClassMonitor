@@ -6,6 +6,9 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 
+// ✅ IMPORTANT: FullCalendar CSS (FIXES WHITE SCREEN)
+
+
 const TimetableScheduler = ({ onClose }) => {
 
     const { backendUrl } = useContext(AppContext);
@@ -33,7 +36,11 @@ const TimetableScheduler = ({ onClose }) => {
     const [dayStartTime, setDayStartTime] = useState('08:00');
     const [dayEndTime, setDayEndTime] = useState('17:00');
 
+    // ✅ DEBUG backend
     useEffect(() => {
+        console.log("Backend URL:", backendUrl);
+        axios.defaults.withCredentials = true;
+
         fetchClasses();
         fetchSubjects();
         fetchTeachers();
@@ -45,6 +52,7 @@ const TimetableScheduler = ({ onClose }) => {
             const res = await axios.get(`${backendUrl}/classes/get-all-classes`);
             if (res.data.success) setClasses(res.data.data || []);
         } catch (err) {
+            console.error("Classes Error:", err);
             setError('Failed to fetch classes');
         }
     };
@@ -54,6 +62,7 @@ const TimetableScheduler = ({ onClose }) => {
             const res = await axios.get(`${backendUrl}/subjects/get-all-subjects`);
             if (res.data.success) setSubjects(res.data.data || []);
         } catch (err) {
+            console.error("Subjects Error:", err);
             setError('Failed to fetch subjects');
         }
     };
@@ -63,6 +72,7 @@ const TimetableScheduler = ({ onClose }) => {
             const res = await axios.get(`${backendUrl}/teachers/get-all-teachers`);
             if (res.data.success) setTeachers(res.data.data || []);
         } catch (err) {
+            console.error("Teachers Error:", err);
             setError('Failed to fetch teachers');
         }
     };
@@ -118,61 +128,10 @@ const TimetableScheduler = ({ onClose }) => {
 
         setTimetableEvents(prev => [...prev, newEvent]);
 
-        // reset
         setShowSlotModal(false);
         setSelectedSubject('');
         setSelectedTeacher('');
         setError('');
-    };
-
-    // ---------------- COPY WEEK ----------------
-    const copyWeekToAllWeeks = () => {
-
-        if (!copyStartDate || !copyEndDate) {
-            setError('Select dates');
-            return;
-        }
-
-        if (timetableEvents.length === 0) {
-            setError('No events to copy');
-            return;
-        }
-
-        const start = new Date(copyStartDate);
-        const end = new Date(copyEndDate);
-
-        let newEvents = [];
-
-        let current = new Date(start);
-
-        while (current <= end) {
-
-            timetableEvents.forEach(event => {
-
-                if (!event.start) return;
-
-                const baseDate = new Date(event.start);
-                const newDate = new Date(current);
-
-                newDate.setDate(current.getDate() + (baseDate.getDay() - current.getDay()));
-                newDate.setHours(baseDate.getHours(), baseDate.getMinutes());
-
-                const newEnd = new Date(newDate);
-                newEnd.setHours(newDate.getHours() + 1);
-
-                newEvents.push({
-                    ...event,
-                    id: Date.now() + Math.random(),
-                    start: newDate,
-                    end: newEnd
-                });
-            });
-
-            current.setDate(current.getDate() + 7);
-        }
-
-        setTimetableEvents(newEvents);
-        setCopyWeekModal(false);
     };
 
     // ---------------- SAVE ----------------
@@ -204,6 +163,7 @@ const TimetableScheduler = ({ onClose }) => {
             }
 
         } catch (err) {
+            console.error("Save Error:", err);
             setError('Save failed');
         } finally {
             setLoading(false);
@@ -243,7 +203,7 @@ const TimetableScheduler = ({ onClose }) => {
                         className="p-2 border"
                     >
                         <option value="">Select Class</option>
-                        {classes.map(c => (
+                        {classes?.map(c => (
                             <option key={c._id} value={c._id}>{c.name}</option>
                         ))}
                     </select>
@@ -277,7 +237,7 @@ const TimetableScheduler = ({ onClose }) => {
                                 className="w-full p-2 mb-2 border"
                             >
                                 <option value="">Subject</option>
-                                {subjects.map(s => (
+                                {subjects?.map(s => (
                                     <option key={s._id} value={s._id}>{s.name}</option>
                                 ))}
                             </select>
@@ -288,7 +248,7 @@ const TimetableScheduler = ({ onClose }) => {
                                 className="w-full p-2 mb-2 border"
                             >
                                 <option value="">Teacher</option>
-                                {teachers.map(t => (
+                                {teachers?.map(t => (
                                     <option key={t._id} value={t._id}>{t.name}</option>
                                 ))}
                             </select>
