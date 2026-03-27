@@ -18,7 +18,7 @@ const lectureSchema = new mongoose.Schema({
     },
     teacher_id: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Teacher',
+        ref: 'teacher',
         required: true
     },
     lecture_date: {

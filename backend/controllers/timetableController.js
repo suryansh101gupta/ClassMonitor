@@ -1,10 +1,24 @@
 import lectureModel from "../models/timetableModel.js";
 import classModel from "../models/classModel.js";
 import pool from "../config/mysql.js";
+import teacherModel from "../models/teacher_model.js";
 
 export const saveTimetable = async (req, res) => {
     try {
         const { classId, events } = req.body;
+
+        if (classId && (!events || events.length === 0)) {
+            const deleteSql = `DELETE FROM lectures WHERE class_id = ?`;
+            const [result] = await pool.execute(deleteSql, [classId]);
+
+            await lectureModel.deleteMany({ class_id: classId });
+
+            return res.status(200).json({
+                success: true,
+                message: "Lectures deleted successfully",
+                affectedRows: result.affectedRows,
+            });
+        }
 
         if (!classId || !events || !Array.isArray(events) || events.length === 0) {
             return res.status(400).json({
@@ -110,24 +124,59 @@ export const getTimetableByClass = async (req, res) => {
             });
         }
 
+        // Fetch from MongoDB with populated data
         const lectureEvents = await lectureModel.find({ class_id: classId })
             .populate('class_id', 'name')
             .populate('subject_id', 'name')
             .populate('teacher_id', 'name email');
 
         if (!lectureEvents || lectureEvents.length === 0) {
-            return res.status(404).json({
-                success: false,
+            return res.status(200).json({
+                success: true,
+                data: [],
                 message: "No lectures found for this class"
             });
         }
 
+        // Transform data for FullCalendar compatibility
+        const calendarEvents = lectureEvents.map(lecture => {
+            const lectureDate = new Date(lecture.lecture_date);
+            const [hours, minutes, seconds] = lecture.start_time.split(':');
+            const startTime = new Date(lectureDate);
+            startTime.setHours(parseInt(hours), parseInt(minutes), 0);
+            
+            const [endHours, endMinutes, endSeconds] = lecture.end_time.split(':');
+            const endTime = new Date(lectureDate);
+            endTime.setHours(parseInt(endHours), parseInt(endMinutes), 0);
+
+            return {
+                id: lecture.lecture_id,
+                title: `${lecture.subject_id?.name || 'Unknown Subject'} - ${lecture.teacher_id?.name || 'Unknown Teacher'}`,
+                start: startTime,
+                end: endTime,
+                extendedProps: {
+                    classId: lecture.class_id?._id,
+                    subjectId: lecture.subject_id?._id,
+                    teacherId: lecture.teacher_id?._id,
+                    subjectName: lecture.subject_id?.name,
+                    teacherName: lecture.teacher_id?.name,
+                    className: lecture.class_id?.name,
+                    lectureId: lecture.lecture_id
+                },
+                subjectId: lecture.subject_id?._id,
+                teacherId: lecture.teacher_id?._id,
+                classId: lecture.class_id?._id
+            };
+        });
+
         res.status(200).json({
             success: true,
-            data: lectureEvents
+            data: calendarEvents,
+            count: calendarEvents.length
         });
 
     } catch (error) {
+        console.error("Error fetching timetable:", error);
         res.status(500).json({
             success: false,
             message: 'Error fetching timetable',
@@ -153,6 +202,126 @@ export const getAllTimetables = async (req, res) => {
             success: false,
             message: 'Error fetching timetables',
             error: error.message
+        });
+    }
+};
+
+export const editTimetable = async (req, res) => {
+    try {
+        const { lectureId } = req.params;
+        const { subject_id, teacher_id, start_time, end_time, lecture_date } = req.body;
+
+        if (!lectureId) {
+            return res.status(400).json({
+                success: false,
+                message: "Lecture ID is required"
+            });
+        }
+
+        // Validate required fields
+        if (!subject_id || !teacher_id || !start_time || !end_time) {
+            return res.status(400).json({
+                success: false,
+                message: "Subject ID, Teacher ID, start time, and end time are required"
+            });
+        }
+
+        // Find existing lecture
+        const existingLecture = await lectureModel.findOne({ lecture_id: lectureId });
+        if (!existingLecture) {
+            return res.status(404).json({
+                success: false,
+                message: "Lecture not found"
+            });
+        }
+
+        // Prepare update data
+        const updateData = {
+            subject_id,
+            teacher_id,
+            start_time,
+            end_time
+        };
+
+        // Update lecture_date if provided
+        if (lecture_date) {
+            updateData.lecture_date = new Date(lecture_date);
+        }
+
+        // Update MongoDB
+        const updatedLecture = await lectureModel.findOneAndUpdate(
+            { lecture_id: lectureId },
+            updateData,
+            { new: true }
+        ).populate('class_id', 'name')
+         .populate('subject_id', 'name')
+         .populate('teacher_id', 'name email');
+
+        try {
+            // Update MySQL
+            const updateSql = `
+                UPDATE lectures 
+                SET subject_id = ?, teacher_id = ?, start_time = ?, end_time = ?
+                ${lecture_date ? ', lecture_date = ?' : ''}
+                WHERE lecture_id = ?
+            `;
+
+            const updateValues = [subject_id, teacher_id, start_time, end_time];
+            if (lecture_date) {
+                updateValues.push(new Date(lecture_date));
+            }
+            updateValues.push(lectureId);
+
+            await pool.execute(updateSql, updateValues);
+
+            // Transform updated data for FullCalendar compatibility
+            const updatedLectureDate = new Date(updatedLecture.lecture_date);
+            const [hours, minutes, seconds] = updatedLecture.start_time.split(':');
+            const startTime = new Date(updatedLectureDate);
+            startTime.setHours(parseInt(hours), parseInt(minutes), 0);
+            
+            const [endHours, endMinutes, endSeconds] = updatedLecture.end_time.split(':');
+            const endTime = new Date(updatedLectureDate);
+            endTime.setHours(parseInt(endHours), parseInt(endMinutes), 0);
+
+            const calendarEvent = {
+                id: updatedLecture.lecture_id,
+                title: `${updatedLecture.subject_id?.name || 'Unknown Subject'} - ${updatedLecture.teacher_id?.name || 'Unknown Teacher'}`,
+                start: startTime,
+                end: endTime,
+                extendedProps: {
+                    classId: updatedLecture.class_id?._id,
+                    subjectId: updatedLecture.subject_id?._id,
+                    teacherId: updatedLecture.teacher_id?._id,
+                    subjectName: updatedLecture.subject_id?.name,
+                    teacherName: updatedLecture.teacher_id?.name,
+                    className: updatedLecture.class_id?.name,
+                    lectureId: updatedLecture.lecture_id
+                },
+                subjectId: updatedLecture.subject_id?._id,
+                teacherId: updatedLecture.teacher_id?._id,
+                classId: updatedLecture.class_id?._id
+            };
+
+            return res.json({
+                success: true,
+                message: "Lecture updated successfully",
+                data: calendarEvent
+            });
+
+        } catch (sqlError) {
+            console.error("MySQL Error:", sqlError);
+            return res.status(500).json({
+                success: false,
+                message: "Failed to update lecture in database"
+            });
+        }
+
+    } catch (error) {
+        console.error("Lecture update error:", error);
+        return res.status(500).json({
+            success: false,
+            message: error.message
         });
     }
 };

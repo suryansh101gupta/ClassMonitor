@@ -7,6 +7,26 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 
+// Toast notification function
+const showToast = (message, type = 'info') => {
+    const toast = document.createElement('div');
+    toast.className = `fixed top-4 right-4 px-6 py-3 rounded-lg text-white z-50 transition-all duration-300 transform ${
+        type === 'success' ? 'bg-green-500' :
+        type === 'error' ? 'bg-red-500' :
+        type === 'warning' ? 'bg-yellow-500' :
+        'bg-blue-500'
+    }`;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => {
+            document.body.removeChild(toast);
+        }, 300);
+    }, 3000);
+};
+
 const TimetableScheduler = ({ onClose }) => {
     const { backendUrl } = useContext(AppContext);
     const [classes, setClasses] = useState([]);
@@ -25,12 +45,24 @@ const TimetableScheduler = ({ onClose }) => {
     const [copyEndDate, setCopyEndDate] = useState('');
     const [dayStartTime, setDayStartTime] = useState('08:00');
     const [dayEndTime, setDayEndTime] = useState('17:00');
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [editingEvent, setEditingEvent] = useState(null);
+    const [editSubject, setEditSubject] = useState('');
+    const [editTeacher, setEditTeacher] = useState('');
 
     useEffect(() => {
         fetchClasses();
         fetchSubjects();
         fetchTeachers();
     }, []);
+
+    useEffect(() => {
+        if (selectedClass) {
+            fetchTimetable(selectedClass._id);
+        } else {
+            setTimetableEvents([]);
+        }
+    }, [selectedClass]);
 
     const fetchClasses = async () => {
         try {
@@ -69,6 +101,23 @@ const TimetableScheduler = ({ onClose }) => {
         }
     };
 
+    const fetchTimetable = async (classId) => {
+        if (!classId) return;
+        
+        try {
+            setLoading(true);
+            const response = await axios.get(`${backendUrl}/timetable/get-timetable/${classId}`);
+            if (response.data.success) {
+                setTimetableEvents(response.data.data || []);
+            }
+        } catch (err) {
+            setError('Failed to fetch timetable');
+            console.error('Error fetching timetable:', err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const handleDateClick = (info) => {
         if (!selectedClass) {
             setError('Please select a class first');
@@ -87,9 +136,10 @@ const TimetableScheduler = ({ onClose }) => {
 
     const handleEventClick = (info) => {
         const event = info.event;
-        if (window.confirm('Do you want to remove this lecture?')) {
-            setTimetableEvents(prev => prev.filter(e => e.id !== event.id));
-        }
+        setEditingEvent(event);
+        setEditSubject(event.extendedProps?.subjectId || '');
+        setEditTeacher(event.extendedProps?.teacherId || '');
+        setShowEditModal(true);
     };
 
     const addLectureToSlot = () => {
@@ -126,6 +176,65 @@ const TimetableScheduler = ({ onClose }) => {
         setSelectedSubject('');
         setSelectedTeacher('');
         setError('');
+    };
+
+    const updateLecture = async () => {
+        if (!editingEvent || !editSubject || !editTeacher) {
+            setError('Please select both subject and teacher');
+            return;
+        }
+
+        try {
+            setLoading(true);
+            
+            const lectureDate = new Date(editingEvent.start);
+            const startTime = lectureDate.toTimeString().slice(0, 8);
+            const endTime = new Date(editingEvent.end).toTimeString().slice(0, 8);
+            
+            const response = await axios.put(`${backendUrl}/timetable/edit-lecture/${editingEvent.id}`, {
+                subject_id: editSubject,
+                teacher_id: editTeacher,
+                start_time: startTime,
+                end_time: endTime,
+                lecture_date: lectureDate.toISOString().split('T')[0]
+            });
+
+            if (response.data.success) {
+                // Update the event in local state
+                setTimetableEvents(prev => prev.map(event => 
+                    event.id === editingEvent.id 
+                        ? response.data.data 
+                        : event
+                ));
+                
+                setShowEditModal(false);
+                setEditingEvent(null);
+                setEditSubject('');
+                setEditTeacher('');
+                setError('');
+                showToast('Lecture updated successfully!', 'success');
+            } else {
+                setError(response.data.message || 'Failed to update lecture');
+            }
+        } catch (err) {
+            setError(err.response?.data?.message || 'Failed to update lecture');
+            console.error('Error updating lecture:', err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const deleteLecture = () => {
+        if (!editingEvent) return;
+        
+        if (window.confirm(`Are you sure you want to delete "${editingEvent.title}"?`)) {
+            setTimetableEvents(prev => prev.filter(e => e.id !== editingEvent.id));
+            setShowEditModal(false);
+            setEditingEvent(null);
+            setEditSubject('');
+            setEditTeacher('');
+            showToast('Lecture deleted successfully!', 'success');
+        }
     };
 
     const copyWeekToAllWeeks = async () => {
@@ -183,12 +292,12 @@ const TimetableScheduler = ({ onClose }) => {
         setCopyWeekModal(false);
         setCopyStartDate('');
         setCopyEndDate('');
-        alert('Timetable copied to all weeks!');
+        showToast('Timetable copied to all weeks!', 'success');
     };
 
     const saveTimetable = async () => {
-        if (!selectedClass || timetableEvents.length === 0) {
-            setError('Please select a class and add some lectures');
+        if (!selectedClass) {
+            setError('Please select a class first');
             return;
         }
 
@@ -204,8 +313,20 @@ const TimetableScheduler = ({ onClose }) => {
                        (event.extendedProps || (event.subjectId && event.teacherId));
             });
 
+            // Handle empty timetable case
             if (validEvents.length === 0) {
-                setError('No valid events to save');
+                // Save empty timetable
+                const response = await axios.post(backendUrl + '/timetable/save-timetable', {
+                    classId: selectedClass._id,
+                    events: []  // Empty array for empty timetable
+                });
+
+                if (response.data.success) {
+                    showToast('Empty timetable saved successfully!', 'success');
+                    console.log('Saved empty timetable for class:', selectedClass._id);
+                } else {
+                    setError(response.data.message || 'Failed to save timetable');
+                }
                 return;
             }
 
@@ -214,12 +335,16 @@ const TimetableScheduler = ({ onClose }) => {
                 const subjectId = event.extendedProps?.subjectId || event.subjectId;
                 const teacherId = event.extendedProps?.teacherId || event.teacherId;
                 
+                // Ensure start and end are Date objects
+                const startDate = event.start instanceof Date ? event.start : new Date(event.start);
+                const endDate = event.end instanceof Date ? event.end : new Date(event.end);
+                
                 return {
                     class_id: selectedClass._id,
                     subject_id: subjectId,
                     teacher_id: teacherId,
-                    start_time: event.start.toISOString(),
-                    end_time: event.end.toISOString()
+                    start_time: startDate.toISOString(),
+                    end_time: endDate.toISOString()
                 };
             });
 
@@ -231,7 +356,7 @@ const TimetableScheduler = ({ onClose }) => {
             });
 
             if (response.data.success) {
-                alert('Timetable saved successfully!');
+                showToast('Timetable saved successfully!', 'success');
                 console.log('Saved response:', response.data);
             } else {
                 setError(response.data.message || 'Failed to save timetable');
@@ -241,6 +366,23 @@ const TimetableScheduler = ({ onClose }) => {
             console.error('Error saving timetable:', err);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const clearAllLectures = () => {
+        if (!selectedClass) {
+            setError('Please select a class first');
+            return;
+        }
+
+        if (timetableEvents.length === 0) {
+            setError('No lectures to clear');
+            return;
+        }
+
+        if (window.confirm(`Are you sure you want to remove ALL lectures for "${selectedClass.name}"? This action cannot be undone.`)) {
+            setTimetableEvents([]);
+            showToast(`All lectures for ${selectedClass.name} have been removed`, 'warning');
         }
     };
 
@@ -354,10 +496,17 @@ const TimetableScheduler = ({ onClose }) => {
                         </button>
                         <button
                             onClick={saveTimetable}
-                            disabled={loading || !selectedClass || timetableEvents.length === 0}
+                            disabled={loading || !selectedClass}
                             className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
                         >
                             {loading ? 'Saving...' : 'Save Timetable'}
+                        </button>
+                        <button
+                            onClick={clearAllLectures}
+                            disabled={!selectedClass || timetableEvents.length === 0}
+                            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                        >
+                            Clear All Lectures
                         </button>
                     </div>
                 </div>
@@ -466,6 +615,75 @@ const TimetableScheduler = ({ onClose }) => {
                                         setCopyWeekModal(false);
                                         setCopyStartDate('');
                                         setCopyEndDate('');
+                                    }}
+                                    className="flex-1 px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400"
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Edit Lecture Modal */}
+                {showEditModal && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-60">
+                        <div className="bg-white p-6 rounded-lg w-96">
+                            <h3 className="text-lg font-semibold mb-4">Edit Lecture</h3>
+                            <div className="mb-4">
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Subject
+                                </label>
+                                <select
+                                    value={editSubject}
+                                    onChange={(e) => setEditSubject(e.target.value)}
+                                    className="w-full p-2 border border-gray-300 rounded-lg"
+                                >
+                                    <option value="">Select subject...</option>
+                                    {subjects.map(subject => (
+                                        <option key={subject._id} value={subject._id}>
+                                            {subject.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="mb-4">
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Teacher
+                                </label>
+                                <select
+                                    value={editTeacher}
+                                    onChange={(e) => setEditTeacher(e.target.value)}
+                                    className="w-full p-2 border border-gray-300 rounded-lg"
+                                >
+                                    <option value="">Select teacher...</option>
+                                    {teachers.map(teacher => (
+                                        <option key={teacher._id} value={teacher._id}>
+                                            {teacher.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={updateLecture}
+                                    disabled={loading}
+                                    className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                                >
+                                    {loading ? 'Updating...' : 'Update Lecture'}
+                                </button>
+                                <button
+                                    onClick={deleteLecture}
+                                    className="flex-1 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                                >
+                                    Remove Lecture
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        setShowEditModal(false);
+                                        setEditingEvent(null);
+                                        setEditSubject('');
+                                        setEditTeacher('');
                                     }}
                                     className="flex-1 px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400"
                                 >

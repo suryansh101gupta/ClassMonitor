@@ -241,3 +241,54 @@ export const getStudentsByLecture = async (req, res) => {
     });
   }
 };
+
+export const getLectures = async(req, res) => {
+  try{
+    const {
+      class_id,
+      start_date,
+      end_date
+    } = req.query;
+
+    const teacher_id = req.userId;
+
+    let query = `
+      SELECT lecture_id, class_id, subject_id, lecture_date, start_time, end_time
+      FROM lectures
+      WHERE teacher_id = ?
+    `;
+
+    let values = [teacher_id];
+
+    if(class_id){
+      query += ` AND class_id = ?`;
+      values.push(class_id);
+    }
+
+    if(start_date && end_date){
+      query += ` AND lecture_date BETWEEN ? AND ?`;
+      values.push(start_date, end_date);
+    }else if(start_date){
+      query += ` AND lecture_date >= ?`;
+      values.push(start_date);
+    }else if (end_date) {
+      query += ` AND lecture_date <= ?`;
+      values.push(end_date);
+    }
+
+    const [rows] = await pool.execute(query, values);
+
+    return res.status(200).json({
+      success: true,
+      count: rows.length,
+      data: rows,
+    });
+
+  }catch(error){
+    console.error("Error fetching Timetable:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server Error",
+    });
+  }
+}

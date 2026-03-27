@@ -513,9 +513,7 @@ export const getAttendanceByRange = async (req, res) => {
     const {
       from_date,
       to_date,
-      subject_id,
-      start_time,
-      end_time,
+      subject_id
     } = req.query;
 
     const user_id = req.userId;
@@ -549,21 +547,20 @@ export const getAttendanceByRange = async (req, res) => {
       values.push(subject_id);
     }
 
-    // ⚠️ This assumes user is a student
     if (user_id) {
       query += " AND a.student_id = ?";
       values.push(user_id);
     }
 
-    if (start_time) {
-      query += " AND l.start_time >= ?";
-      values.push(start_time);
-    }
+    // if (start_time) {
+    //   query += " AND l.start_time >= ?";
+    //   values.push(start_time);
+    // }
 
-    if (end_time) {
-      query += " AND l.end_time <= ?";
-      values.push(end_time);
-    }
+    // if (end_time) {
+    //   query += " AND l.end_time <= ?";
+    //   values.push(end_time);
+    // }
 
     const [rows] = await pool.execute(query, values);
 
@@ -581,3 +578,48 @@ export const getAttendanceByRange = async (req, res) => {
     });
   }
 };
+
+export const getUserTimetableByClass = async(req, res) =>{
+  try{
+    const {
+      start_date,
+      end_date
+    } = req.query
+
+    // const user_id = req.userId;
+    const { class_id } = await userModel.findOne({ _id: user_id });
+
+    let query = `
+    SELECT lecture_id, class_id, subject_id, lecture_date, start_time, end_time
+    FROM lectures
+    WHERE class_id = ?
+    `
+    if(start_date && end_date){
+      query += ` AND lecture_date BETWEEN ? AND ?`;
+      values.push(start_date, end_date);
+    }else if(start_date){
+      query += ` AND lecture_date >= ?`;
+      values.push(start_date);
+    }else if (end_date) {
+      query += ` AND lecture_date <= ?`;
+      values.push(end_date);
+    }
+
+    const [rows] = await pool.execute(query, values);
+    
+    return res.status(200).json({
+      success: true,
+      count: rows.length,
+      data: rows,
+    });
+
+  }catch(error){
+    console.error("Error fetching Timetable:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server Error",
+    });
+  }
+  
+
+}
