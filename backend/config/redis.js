@@ -1,7 +1,7 @@
 import { createClient } from "redis";
 
 const client = createClient({
-  url: "redis://redis-16382.crce263.ap-south-1-1.ec2.cloud.redislabs.com:16382"
+  url: process.env.REDIS_URL
 });
 
 client.on("error", (err) => {
