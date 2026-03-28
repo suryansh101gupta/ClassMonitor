@@ -12,7 +12,7 @@ teacherRouter.post('/login', loginTeacher);
 
 teacherRouter.post('/logout', teacherAuth, logoutTeacher);
 
-teacherRouter.get('/get-all-teachers', adminAuth, cacheMiddleware("all_teachers", 60), getAllTeachers);
+teacherRouter.get('/get-all-teachers', cacheMiddleware("all_teachers", 60), getAllTeachers);
 
 teacherRouter.get('/get-attendance', teacherAuth, getStudentsByLecture);
 

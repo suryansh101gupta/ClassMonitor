@@ -1,12 +1,12 @@
 // Note: In ESM, you must include the .js extension for local imports
-import { updateStudentCounts } from "../services/attendance.service.js";
+import { processWindowData } from "../services/attendance.service.js";
 import "../globals.js";
 
 export const receiveFrameData = async (req, res) => {
   console.log("[ATTENDANCE] /frame-result body:", req.body);
   console.log("[ATTENDANCE] activeLectureId:", global.activeLectureId);
   try {
-    const { class_id, recognized_students } = req.body;
+    const { class_id, window_id, students, total_frames } = req.body;
 
     // Store the class_id globally for schedulers to use
     if (class_id) {
@@ -23,13 +23,16 @@ export const receiveFrameData = async (req, res) => {
       return res.status(200).json({ message: "No active lecture" });
     }
 
-    // Standardize data: Remove duplicates from the frame results
-    const uniqueStudents = [...new Set(recognized_students)];
+    // Validate window payload
+    if (window_id === undefined || !students || !Array.isArray(students) || total_frames === undefined) {
+      console.error("[ATTENDANCE] Invalid window payload:", { window_id, students, total_frames });
+      return res.status(400).json({ error: "Invalid window payload" });
+    }
 
-    // Send to service layer to handle Redis/DB logic
-    await updateStudentCounts(lectureId, uniqueStudents);
+    // Send to service layer to handle window processing
+    await processWindowData(lectureId, window_id, students, total_frames);
 
-    res.status(200).json({ message: "Counts updated" });
+    res.status(200).json({ message: "Window processed" });
 
   } catch (err) {
     console.error("Error in receiveFrameData:", err);

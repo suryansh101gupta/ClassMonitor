@@ -6,9 +6,9 @@ const timetableRouter = express.Router();
 
 timetableRouter.post('/save-timetable', adminAuth, saveTimetable);
 
-timetableRouter.get('/get-timetable/:classId', adminAuth, getTimetableByClass);
+timetableRouter.get('/get-timetable/:classId', getTimetableByClass);
 
-timetableRouter.get('/get-all-timetables', adminAuth, getAllTimetables);
+timetableRouter.get('/get-all-timetables', getAllTimetables);
 
 timetableRouter.put('/edit-lecture/:lectureId', adminAuth, editTimetable);
 

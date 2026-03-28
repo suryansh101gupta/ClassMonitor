@@ -6,7 +6,7 @@ import "../globals.js";
 cron.schedule("* * * * *", async () => {
   try {
     // Use global class_id if available, otherwise default to 3
-    const classId = global.activeClassId || 3;
+    const classId = '69c2c4076d78033217584325';
     
     const [rows] = await db.query(`
       SELECT * FROM lectures

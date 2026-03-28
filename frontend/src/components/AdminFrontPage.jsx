@@ -1,6 +1,7 @@
 import React, { useContext, useState, useEffect, useMemo } from 'react';
 import { AppContext } from '../context/AppContext';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -10,7 +11,8 @@ import './AdminFrontPage.css';
 import { toast } from 'react-toastify';
 
 const AdminFrontPage = () => {
-  const {backendUrl} =  useContext(AppContext);
+  const {backendUrl, setIsLoggedin} =  useContext(AppContext);
+  const navigate = useNavigate();
   
   // Tab navigation state
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -124,7 +126,7 @@ const AdminFrontPage = () => {
       });
 
       if (response.data.success) {
-        alert('Subjects assigned successfully!');
+        toast.success('Subjects assigned successfully!');
         setIsAssignmentModalOpen(false);
         // Reset state
         setSelectedTeacher(null);
@@ -147,6 +149,21 @@ const AdminFrontPage = () => {
     setSelectedSubjects([]);
     setSubjects([]);
     setError('');
+  };
+
+  const handleLogout = async () => {
+    try {
+      const { data } = await axios.post(`${backendUrl}/admin/logout`);
+      if (data.success) {
+        setIsLoggedin(false);
+        toast.success("Logged out successfully");
+        navigate('/admin-login');
+      } else {
+        toast.error(data.message || "Logout failed");
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Error during logout");
+    }
   };
 
   const filteredTeachers = useMemo(() => {
@@ -268,6 +285,24 @@ const AdminFrontPage = () => {
 
   return (
     <div className="admin-front-page">
+      {/* Top Right Buttons */}
+      <div className="absolute top-4 right-4 flex gap-2 z-10">
+        <button
+          onClick={() => navigate('/admin-home')}
+          className="flex items-center gap-2 bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-all duration-200"
+        >
+          <i className="ri-arrow-left-line"></i>
+          Back
+        </button>
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-all duration-200"
+        >
+          <i className="ri-logout-box-line"></i>
+          Logout
+        </button>
+      </div>
+
       {/* Tab Navigation */}
       <div className="tab-navigation">
         <div className="tab-list">

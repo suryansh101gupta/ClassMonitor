@@ -10,6 +10,7 @@ export const AppContextProvider = (props) => {
     const [isLoggedin, setIsLoggedin] = useState(false)
     const [userData, setUserData] = useState(false)
     const [adminData, setAdminData] = useState(false)
+    const [teacherData, setTeacherData] = useState(false)
 
     axios.defaults.withCredentials = true;
 
@@ -33,6 +34,21 @@ export const AppContextProvider = (props) => {
             if(data.success){
                 setIsLoggedin(true)
                 getAdminData()
+            }
+        }catch(error){
+            if(error.response?.status !== 401){
+                toast.error(error.message)
+            }
+        }
+    }
+
+    // ✅ ADDED
+    const getTeacherAuthState = async () => {
+        try{
+            const {data} = await axios.get(backendUrl + '/teacher/is-teacher-auth')
+            if(data.success){
+                setIsLoggedin(true)
+                getTeacherData()
             }
         }catch(error){
             // Don't show toast for 401 errors - it's expected when not logged in
@@ -60,6 +76,14 @@ export const AppContextProvider = (props) => {
             toast.error(error.message)
         }
     }
+    const getTeacherData = async () => {
+        try{
+            const {data} = await axios.get(backendUrl + '/teacher-data/data')
+            data.success ? setTeacherData(data.teacherData) : toast.error(data.message)
+        }catch(error){
+            toast.error(error.message)
+        }
+    }
 
     useEffect(() => {
         getAuthState();
@@ -67,6 +91,10 @@ export const AppContextProvider = (props) => {
 
     useEffect(() => {
         getAdminAuthState();
+    }, [])
+    // ✅ ADDED
+    useEffect(() => {
+        getTeacherAuthState();
     }, [])
 
     const value = {
@@ -78,7 +106,10 @@ export const AppContextProvider = (props) => {
         getUserData,
         adminData,
         setAdminData,
-        getAdminData 
+        getAdminData,
+        teacherData,
+        setTeacherData,
+        getTeacherData
     }
 
     return(

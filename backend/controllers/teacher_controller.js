@@ -187,9 +187,10 @@ export const getStudentsByLecture = async (req, res) => {
     const teacher_id = req.userId;
 
     let query = `
-      SELECT a.student_id, a.status, l.lecture_id
+      SELECT a.student_id, s.name, s.roll_no, a.status, l.lecture_id
       FROM lectures l
       JOIN attendance a ON l.lecture_id = a.lecture_id
+      JOIN students s ON a.student_id = s.student_id
       WHERE 1=1
     `;
 

@@ -1,6 +1,6 @@
 import cron from "node-cron";
 import db from "../config/mysql.js";
-import { client } from "../config/redis.js";
+import { calculateAttendanceFromWindows, clearLecture } from "../services/attendance.service.js";
 import "../globals.js";
 
 // runs every minute
@@ -27,16 +27,18 @@ cron.schedule("* * * * *", async () => {
       }
 
       try {
-        // 2. Get Redis data
-        const data = await client.hGetAll(`lecture:${lectureId}`);
+        console.log(`[SCHED] Finalizing lecture ${lectureId} using window-based system`);
 
-        console.log("Finalizing lecture:", lectureId);
-        console.log("[SCHED] finalize lecture:", lectureId, "redis hash fields:", Object.keys(data).length);
-
-        // 3. Get all students (IMPORTANT)
+        // 2. Get all students for the class
         const [students] = await db.query(`
           SELECT student_id, roll_no FROM students WHERE class_id = ?
         `, [classId]);
+
+        // 3. Calculate attendance using window-based system
+        const attendanceResults = await calculateAttendanceFromWindows(lectureId, 0, 0.3, 0.6);
+        
+        console.log(`[SCHED] Window-based results for lecture ${lectureId}:`, 
+          Object.keys(attendanceResults).length, "students processed");
 
         // Start transaction for atomic operations
         await db.query("START TRANSACTION");
@@ -45,18 +47,25 @@ cron.schedule("* * * * *", async () => {
         for (let student of students) {
           try {
             const studentId = student?.student_id ?? null;
-            if (!studentId) {
-              console.warn("[SCHED] finalize: missing student_id", student);
+            const rollNo = student?.roll_no ?? null;
+            
+            if (!studentId || !rollNo) {
+              console.warn("[SCHED] finalize: missing student data", student);
               continue;
             }
 
-            // Redis stores string → convert
-            const count = parseInt(data[String(student.roll_no)] || "0");
+            // Get attendance result from window calculation
+            const result = attendanceResults[String(rollNo)];
+            let status = 0; // Default to absent
+            
+            if (result) {
+              status = result.status;
+              console.log(`[SCHED] Student ${rollNo}: present=${result.presentWindows}/${result.totalWindows} (${(result.attendanceRatio * 100).toFixed(1)}%) -> ${status ? 'PRESENT' : 'ABSENT'}`);
+            } else {
+              console.log(`[SCHED] Student ${rollNo}: no window data -> ABSENT`);
+            }
 
-            // 4. Apply threshold logic
-            const status = count >= 3 ? 1 : 0;
-
-            // 5. Insert attendance with duplicate prevention
+            // 4. Insert attendance with duplicate prevention
             await db.query(`
               INSERT IGNORE INTO attendance (student_id, lecture_id, status)
               VALUES (?, ?, ?)
@@ -69,7 +78,7 @@ cron.schedule("* * * * *", async () => {
           }
         }
         
-        // 7. Mark lecture processed
+        // 5. Mark lecture processed
         await db.query(`
           UPDATE lectures SET processed = 1 WHERE lecture_id = ?
         `, [lectureId]);
@@ -78,9 +87,10 @@ cron.schedule("* * * * *", async () => {
         await db.query("COMMIT");
         
         // 6. Cleanup Redis (after successful commit)
-        await client.del(`lecture:${lectureId}`);
+        await clearLecture(lectureId);
         
-        console.log(`Lecture finalized: ${lectureId}, processed ${successCount} students`);
+        console.log(`[SCHED] Lecture ${lectureId} finalized: ${successCount} students processed using window-based system`);
+
       } catch (lectureErr) {
         // Rollback transaction on error
         await db.query("ROLLBACK");
