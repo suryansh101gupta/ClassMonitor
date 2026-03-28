@@ -5,7 +5,9 @@ face encodings, and displays the recognized name on screen.
 
 import os
 import sys
+import time
 from pathlib import Path
+from collections import defaultdict
 
 import requests
 NODE_API = "http://localhost:4000/attendance/frame-result"
@@ -33,7 +35,7 @@ MONGO_DB_NAME = os.getenv("MONGO_DB_NAME", "ClassMonitor")
 COLLECTION_NAME = "users"
 FACE_MATCH_THRESHOLD = 0.6  # Lower = stricter (face_recognition default is 0.6)
 CACHE_RELOAD_INTERVAL = 60  # Reload user encodings from DB every N seconds
-FRAME_POST_INTERVAL = 60  # Post attendance only every N frames
+WINDOW_DURATION = 3  # Window duration in seconds
 CLASS_ID = os.getenv("CLASS_ID")
 CAM_INDEX = int(os.getenv("CAM_INDEX", 0))
 
@@ -91,11 +93,17 @@ def main():
 
     frame_count = 0
     last_cache_reload = 0
-    last_post_frame = 0
     last_faces = []  # [(top, right, bottom, left, name), ...]
+    
+    # Window-based tracking
+    window_start_time = time.time()
+    window_id = 0
+    window_student_counts = defaultdict(int)  # roll_no -> frame count
+    total_frames_in_window = 0
 
     print("Camera started. Press 'q' to quit.")
     print("Face detection runs every 3 frames to reduce CPU load.")
+    print("Window-based attendance: 3-second windows with presence ratio calculation.")
 
     while True:
         ret, frame = cap.read()
@@ -103,6 +111,7 @@ def main():
             break
 
         frame_count += 1
+        current_time = time.time()
 
         # Periodically reload known faces from MongoDB
         if frame_count - last_cache_reload > CACHE_RELOAD_INTERVAL * 30:  # ~30 fps
@@ -119,26 +128,46 @@ def main():
                 name, roll_no = find_best_match(face_encoding, known_encodings, known_names, known_roll_nos)
                 last_faces.append((top, right, bottom, left, roll_no))
 
-        recognized_students = []
+        # Track recognized students in current window
+        recognized_in_frame = set()
         for (_, _, _, _, roll_no) in last_faces:
             if roll_no and roll_no != "Unknown":
-                recognized_students.append(roll_no)
-        # remove duplicates
-        recognized_students = list(set(recognized_students))
+                recognized_in_frame.add(roll_no)
+        
+        # Update window counts
+        for roll_no in recognized_in_frame:
+            window_student_counts[roll_no] += 1
+        total_frames_in_window += 1
 
-        # Only post to API every FRAME_POST_INTERVAL frames to avoid overcounting
-        if recognized_students and frame_count - last_post_frame >= FRAME_POST_INTERVAL:
+        # Check if window duration has passed
+        if current_time - window_start_time >= WINDOW_DURATION:
+            # Prepare window payload
+            window_students = [
+                {"roll_no": roll_no, "count": count}
+                for roll_no, count in window_student_counts.items()
+            ]
+            
             try:
-                print("[CAME] posting to:", NODE_API, "students:", recognized_students)
+                print(f"[WINDOW] Window {window_id} - Total frames: {total_frames_in_window}, Students: {len(window_students)}")
                 response = requests.post(
                     NODE_API,
-                    json={"class_id": CLASS_ID, "recognized_students": recognized_students},
-                    timeout=0.5
+                    json={
+                        "class_id": CLASS_ID, 
+                        "window_id": window_id,
+                        "students": window_students,
+                        "total_frames": total_frames_in_window
+                    },
+                    timeout=1.0
                 )
-                print("[CAME] response:", response.json())
-                last_post_frame = frame_count
+                print(f"[WINDOW] Response: {response.json()}")
             except Exception as e:
-                print("API error:", e)
+                print(f"[WINDOW] API error: {e}")
+
+            # Reset for next window
+            window_id += 1
+            window_start_time = current_time
+            window_student_counts.clear()
+            total_frames_in_window = 0
 
         # Draw last detected faces on every frame for smooth display
         for top, right, bottom, left, roll_no in last_faces:
@@ -153,6 +182,15 @@ def main():
                 cv2.FONT_HERSHEY_SIMPLEX,
                 0.8, (255, 255, 255), 2
             )
+
+        # Display window info on screen
+        window_info = f"Window: {window_id} | Frames: {total_frames_in_window} | Students: {len(window_student_counts)}"
+        cv2.putText(
+            frame, window_info,
+            (10, 30),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.6, (255, 255, 0), 2
+        )
 
         cv2.imshow("Face Recognition - ClassMonitor", frame)
         if cv2.waitKey(1) & 0xFF == ord("q"):

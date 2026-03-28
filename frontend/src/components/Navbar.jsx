@@ -52,7 +52,7 @@ const Navbar = () => {
 
   return (
     <div className='w-full flex justify-between items-center p-4 sm:p-3 sm:px-12 absolute top-0'>
-      <div className='flex flex-row justify-between items-center gap-0'>
+      <div className='flex flex-row items-center gap-2'>
         <img src={assets.logo} alt="logo" className='w-28 sm:w-32' />
         <h1 className='text-6xl'>ClassMonitor</h1>
       </div>
@@ -73,13 +73,24 @@ const Navbar = () => {
 
           </div>
         </div>
-        : <div>
-            <button onClick={() => {navigate('/login')}} className='flex items-center gap-2 border border-gray-500 rounded-2xl px-6 px-2 hover:bg-green-700 transition-all cursor-pointer'>
-              Login <i className="ri-user-6-fill"></i>
+        : 
+        <div className='flex gap-4 items-center'>
+            <button 
+            onClick={() => {navigate('/login')}} 
+            className='flex items-center gap-2 border border-gray-500 rounded-full px-6 py-2 hover:bg-green-700 transition-all duration-200 cursor-pointer hover:scale-105'>
+            Login <i className="ri-user-6-fill"></i>
             </button>
-            <button onClick={() => {navigate('/admin-login')}} className='flex items-center gap-2 border border-gray-500 rounded-2xl px-6 px-2 hover:bg-green-700 transition-all cursor-pointer'>
+            <button 
+            onClick={() => {navigate('/admin-login')}} 
+            className='flex items-center gap-2 border border-gray-500 rounded-full px-6 py-2 hover:bg-green-700 transition-all duration-200 cursor-pointer hover:scale-105'>
               Admin Login <i className="ri-user-6-fill"></i>
             </button>
+
+            <button 
+            onClick={() => {navigate('/teacher-login')}} 
+            className='flex items-center gap-2 border border-gray-500 rounded-full px-6 py-2 hover:bg-green-700 transition-all duration-200 cursor-pointer hover:scale-105'>
+            Teacher Login <i className="ri-user-6-fill"></i>
+          </button>
           </div>
       }
     </div>

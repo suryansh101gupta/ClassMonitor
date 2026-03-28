@@ -1,5 +1,5 @@
 import express from 'express';
-import { getUploadUrl, isAuthenticated, login, logout, register, resetPassword, sendResetOtp, sendVerifyOtp, updatePhoto, verifyEmail, getClasses, getAttendanceByLecture } from '../controllers/userController.js';
+import { getUploadUrl, isAuthenticated, login, logout, register, resetPassword, sendResetOtp, sendVerifyOtp, updatePhoto, verifyEmail, getClasses, getAttendanceByLecture, getAttendanceByRange, getUserTimetableByClass } from '../controllers/userController.js';
 import userAuth from '../middlewares/userAuth.js';
 
 
@@ -28,6 +28,10 @@ userRouter.post("/update-photo", userAuth, updatePhoto);
 userRouter.get("/classes", getClasses);
 
 userRouter.get('/get-attendance', userAuth, getAttendanceByLecture);
+
+userRouter.get('/get-attendance-range', userAuth, getAttendanceByRange);
+
+userRouter.get('/get-user-timetable', userAuth, getUserTimetableByClass);
 
 
 export default userRouter;

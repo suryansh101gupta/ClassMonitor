@@ -7,6 +7,6 @@ const subjectRouter = express.Router();
 
 subjectRouter.post('/create-sub', adminAuth, createSubject);
 
-subjectRouter.get('/get-all-subjects', adminAuth, cacheMiddleware("all_subjects", 60), getAllSubjects);
+subjectRouter.get('/get-all-subjects', cacheMiddleware("all_subjects", 60), getAllSubjects);
 
 export default subjectRouter;
