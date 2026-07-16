@@ -1,5 +1,5 @@
 // Note: In ESM, you must include the .js extension for local imports
-import { processWindowData } from "../services/attendance.service.js";
+import { processWindowData } from "../services/attendance_service.js";
 import "../globals.js";
 
 export const receiveFrameData = async (req, res) => {

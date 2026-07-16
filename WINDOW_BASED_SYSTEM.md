@@ -64,7 +64,7 @@ total_frames_in_window = 0
 - Handles idempotency via service layer
 - Maintains backward compatibility
 
-#### Service (`attendance.service.js`)
+#### Service (`attendance_service.js`)
 - **New Functions**:
   - `processWindowData()`: Main window processing
   - `getAllWindowData()`: Retrieve all window data

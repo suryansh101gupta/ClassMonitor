@@ -130,7 +130,7 @@ export const loginTeacher = async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    return res.json({ success: true, message: "logged in" });
+    return res.json({ success: true, message: "logged in", token: token });
   } catch (error) {
     return res.json({ success: false, message: error.message });
   }
@@ -293,3 +293,11 @@ export const getLectures = async(req, res) => {
     });
   }
 }
+
+export const isTeacherAuthenticated = async (req, res) => {
+  try {
+    return res.json({ success: true, message: "Teacher logged in" });
+  } catch (error) {
+    return res.json({ success: false, message: error.message });
+  }
+};

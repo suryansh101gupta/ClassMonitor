@@ -1,0 +1,306 @@
+/* Login.css - Minimal Beige, Black, Orange Aesthetic */
+
+.login-page {
+  min-height: 100vh;
+  background-color: #F4F0E6;
+  background-image:
+    linear-gradient(rgba(17, 17, 17, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(17, 17, 17, 0.05) 1px, transparent 1px);
+  background-size: 30px 30px;
+  font-family: 'Inter', sans-serif;
+  color: #111111;
+  position: relative;
+  overflow-x: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+/* Abstract Background Shapes */
+.abstract-shape {
+  position: fixed;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.shape-circle {
+  width: 300px;
+  height: 300px;
+  background: #FF5722;
+  border-radius: 50%;
+  top: -100px;
+  left: -100px;
+  opacity: 0.8;
+  mix-blend-mode: multiply;
+}
+
+.shape-square {
+  width: 250px;
+  height: 250px;
+  background: #111111;
+  bottom: 50px;
+  right: -50px;
+  transform: rotate(15deg);
+  opacity: 0.1;
+}
+
+.shape-triangle {
+  width: 0;
+  height: 0;
+  border-left: 150px solid transparent;
+  border-right: 150px solid transparent;
+  border-bottom: 250px solid #FF5722;
+  bottom: -100px;
+  left: 20%;
+  opacity: 0.2;
+}
+
+/* Logo */
+.login-logo {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  z-index: 20;
+}
+
+.logo-box {
+  width: 40px;
+  height: 40px;
+  background: #FF5722;
+  border: 3px solid #111111;
+  border-radius: 8px;
+  box-shadow: 3px 3px 0px #111111;
+}
+
+.login-logo span {
+  font-size: 1.2rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  color: #111111;
+}
+
+/* Back Button */
+.back-button {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: #ffffff;
+  border: 3px solid #111111;
+  border-radius: 8px;
+  color: #111111;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 4px 4px 0px #111111;
+  z-index: 20;
+}
+
+.back-button:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px #FF5722;
+  background: #FF5722;
+}
+
+/* Login Container */
+.login-container {
+  background: #ffffff;
+  border: 3px solid #111111;
+  border-radius: 12px;
+  padding: 40px;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 8px 8px 0px #FF5722;
+  position: relative;
+  z-index: 10;
+}
+
+.login-title {
+  font-size: 2rem;
+  font-weight: 900;
+  color: #111111;
+  text-align: center;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.login-subtitle {
+  font-size: 0.95rem;
+  color: #666666;
+  text-align: center;
+  margin-bottom: 32px;
+  font-weight: 500;
+}
+
+/* Input Groups */
+.input-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  background: #F4F0E6;
+  border: 3px solid #111111;
+  border-radius: 8px;
+  padding: 12px 16px;
+  transition: all 0.2s ease;
+}
+
+.input-group:focus-within {
+  border-color: #FF5722;
+  box-shadow: 4px 4px 0px #FF5722;
+}
+
+.input-icon {
+  font-size: 1.2rem;
+  color: #FF5722;
+  flex-shrink: 0;
+}
+
+.input-field {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #111111;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.input-field::placeholder {
+  color: #999999;
+}
+
+.input-field option {
+  background: #F4F0E6;
+  color: #111111;
+}
+
+/* Forgot Password */
+.forgot-password {
+  text-align: right;
+  color: #FF5722;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-bottom: 24px;
+  transition: all 0.2s ease;
+}
+
+.forgot-password:hover {
+  text-decoration: underline;
+}
+
+/* Submit Button */
+.submit-button {
+  width: 100%;
+  padding: 14px;
+  background: #FF5722;
+  border: 3px solid #111111;
+  border-radius: 8px;
+  color: #111111;
+  font-size: 1rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 4px 4px 0px #111111;
+}
+
+.submit-button:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px #111111;
+  background: #111111;
+  color: #FF5722;
+}
+
+.submit-button:active {
+  transform: translate(0, 0);
+  box-shadow: 2px 2px 0px #111111;
+}
+
+/* Switch Auth */
+.switch-auth {
+  text-align: center;
+  margin-top: 24px;
+  font-size: 0.85rem;
+  color: #666666;
+  font-weight: 500;
+}
+
+.switch-link {
+  color: #FF5722;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.switch-link:hover {
+  text-decoration: underline;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .login-page {
+    padding: 16px;
+  }
+
+  .login-logo {
+    top: 16px;
+    left: 16px;
+  }
+
+  .logo-box {
+    width: 32px;
+    height: 32px;
+  }
+
+  .login-logo span {
+    font-size: 1rem;
+  }
+
+  .back-button {
+    top: 16px;
+    right: 16px;
+    padding: 10px 16px;
+    font-size: 0.85rem;
+  }
+
+  .login-container {
+    padding: 32px 24px;
+  }
+
+  .login-title {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-title {
+    font-size: 1.25rem;
+  }
+
+  .login-subtitle {
+    font-size: 0.85rem;
+  }
+
+  .input-group {
+    padding: 10px 12px;
+  }
+
+  .input-icon {
+    font-size: 1rem;
+  }
+
+  .input-field {
+    font-size: 0.85rem;
+  }
+}

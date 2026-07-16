@@ -1,0 +1,65 @@
+ THRESHOLDS
+
+    cache_hit_latency
+    ✓ 'p(95)<100' p(95)=12.157803
+
+    cache_hit_rate
+    ✓ 'rate>0.6' rate=99.68%
+
+    cache_miss_latency
+    ✓ 'p(95)<400' p(95)=385.199916
+
+    http_req_duration
+    ✓ 'p(95)<300' p(95)=12.34ms
+
+
+  █ TOTAL RESULTS
+
+    checks_total.......: 19142  189.068136/s
+    checks_succeeded...: 99.98% 19140 out of 19142
+    checks_failed......: 0.01%  2 out of 19142
+
+    ✓ subjects-req-1: status 200
+    ✓ subjects-req-1: has data
+    ✓ subjects-req-1: response time
+    ✓ subjects-req-2: status 200
+    ✓ subjects-req-2: has data
+    ✗ subjects-req-2: faster than first
+      ↳  99% — ✓ 1125 / ✗ 1
+    ✓ subjects-req-3: status 200
+    ✓ subjects-req-3: has data
+    ✗ subjects-req-3: cache hit
+      ↳  99% — ✓ 1125 / ✗ 1
+    ✓ teachers-req-1: status 200
+    ✓ teachers-req-1: has data
+    ✓ teachers-req-2: status 200
+    ✓ teachers-req-2: has data
+    ✓ classes-req-1: status 200
+    ✓ classes-req-1: has data
+    ✓ classes-req-2: status 200
+    ✓ classes-req-2: has data
+
+    CUSTOM
+    cache_hit_latency..............: avg=7.85564    min=4.240151   med=7.152987   max=94.988328  p(90)=10.348423  p(95)=12.157803
+    cache_hit_rate.................: 99.68% 7857 out of 7882
+    cache_hits.....................: 7857   77.604657/s
+    cache_miss_latency.............: avg=187.881482 min=103.568217 med=162.669078 max=479.909251 p(90)=305.261118 p(95)=385.199916        
+    cache_miss_rate................: 0.31%  25 out of 7882
+    cache_misses...................: 25     0.246928/s
+    total_cache_requests...........: 7882   77.851586/s
+
+    HTTP
+    http_req_duration..............: avg=8.44ms     min=4.24ms     med=7.15ms     max=479.9ms    p(90)=10.42ms    p(95)=12.34ms
+      { expected_response:true }...: avg=8.44ms     min=4.24ms     med=7.15ms     max=479.9ms    p(90)=10.42ms    p(95)=12.34ms
+    http_req_failed................: 0.00%  0 out of 7883
+    http_reqs......................: 7883   77.861463/s
+
+    EXECUTION
+    iteration_duration.............: avg=938.5ms    min=666.82ms   med=940.13ms   max=1.6s       p(90)=1.13s      p(95)=1.15s
+    iterations.....................: 1126   11.121655/s
+    vus............................: 1      min=1            max=20
+    vus_max........................: 20     min=20           max=20
+
+    NETWORK
+    data_received..................: 350 MB 3.5 MB/s
+    data_sent......................: 2.2 MB 22 kB/s

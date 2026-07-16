@@ -1,0 +1,171 @@
+time="2026-04-02T14:08:26Z" level=info msg="✅  Test complete. All three role tokens were valid throughout." source=console
+
+
+  █ THRESHOLDS
+
+    custom_auth_latency
+    ✗ 'p(95)<850' p(95)=1844.859556
+
+    custom_cache_hit_latency
+    ✗ 'p(95)<100' p(95)=126.847768
+
+    custom_cache_hit_rate
+    ✗ 'rate>0.7' rate=36.87%
+
+    custom_cache_miss_latency
+    ✗ 'p(95)<400' p(95)=3814.782656
+
+    custom_db_read_latency
+    ✗ 'p(95)<450' p(95)=2364.065549
+
+    custom_db_write_latency
+    ✗ 'p(95)<650' p(95)=2906.950565
+
+    custom_error_rate
+    ✗ 'rate<0.03' rate=26.74%
+
+    http_req_duration
+    ✗ 'p(95)<550' p(95)=2.48s
+
+    http_req_failed
+    ✓ 'rate<0.03' rate=0.01%
+
+
+  █ TOTAL RESULTS
+
+    checks_total.......: 38668  126.587325/s
+    checks_succeeded...: 89.25% 34512 out of 38668
+    checks_failed......: 10.74% 4156 out of 38668
+
+    ✓ setup: admin login 200
+    ✓ setup: teacher login 200
+    ✓ setup: user login 200
+    ✗ admin register: status 201
+      ↳  99% — ✓ 702 / ✗ 1
+    ✗ admin register: success true
+      ↳  99% — ✓ 702 / ✗ 1
+    ✗ admin register: latency < 1s
+      ↳  77% — ✓ 542 / ✗ 161
+    ✓ admin login: status 200
+    ✓ admin login: success true
+    ✓ admin login: has token field
+    ✓ admin login: sets cookie
+    ✗ admin login: latency < 1s
+      ↳  91% — ✓ 640 / ✗ 63
+    ✓ admin is-auth: status 200
+    ✓ admin is-auth: success true
+    ✗ teacher register: status 201
+      ↳  99% — ✓ 702 / ✗ 1
+    ✗ teacher register: success true
+      ↳  99% — ✓ 702 / ✗ 1
+    ✗ teacher register: has token
+      ↳  99% — ✓ 702 / ✗ 1
+    ✗ teacher register: latency < 1s
+      ↳  42% — ✓ 301 / ✗ 402
+    ✓ teacher login: status 200
+    ✓ teacher login: success true
+    ✗ teacher login: has token field
+      ↳  0% — ✓ 0 / ✗ 703
+    ✓ teacher login: sets cookie
+    ✗ teacher login: latency < 1s
+      ↳  89% — ✓ 631 / ✗ 72
+    ✓ user login: status 200
+    ✓ user login: success true
+    ✓ user login: sets cookie
+    ✗ user login: latency < 1s
+      ↳  64% — ✓ 452 / ✗ 251
+    ✓ user is-auth: status 200
+    ✓ user is-auth: success true
+    ✓ subjects: status 200
+    ✓ subjects: has data array
+    ✗ subjects: latency < 500ms
+      ↳  55% — ✓ 392 / ✗ 311
+    ✗ subjects: cache working
+      ↳  47% — ✓ 331 / ✗ 372
+    ✓ teachers: status 200
+    ✓ teachers: has data array
+    ✗ teachers: latency < 500ms
+      ↳  55% — ✓ 390 / ✗ 313
+    ✗ teachers: cache working
+      ↳  54% — ✓ 382 / ✗ 321
+    ✓ admin-data: status 200
+    ✓ admin-data: success true
+    ✗ admin-data: latency < 500ms
+      ↳  82% — ✓ 581 / ✗ 122
+    ✓ classes: status 200
+    ✓ classes: has data array
+    ✗ classes: latency < 500ms
+      ↳  62% — ✓ 442 / ✗ 261
+    ✗ classes: cache working
+      ↳  59% — ✓ 420 / ✗ 283
+    ✓ user-data: status 200
+    ✓ user-data: success true
+    ✗ user-data: latency < 500ms
+      ↳  91% — ✓ 643 / ✗ 60
+    ✓ create subject: status 201
+    ✓ create subject: success true
+    ✗ create subject: latency < 800ms
+      ↳  62% — ✓ 439 / ✗ 264
+    ✓ create class: status 201
+    ✓ create class: success true
+    ✗ create class: latency < 800ms
+      ↳  72% — ✓ 511 / ✗ 192
+    ✓ admin logout: status 200
+    ✓ admin logout: success true
+    ✓ teacher logout: status 200
+    ✓ teacher logout: success true
+    ✓ user logout: status 200
+    ✓ user logout: success true
+
+    CUSTOM
+    custom_auth_latency............: avg=514.1579    min=1.834251   med=242.47004  max=4704.470146 p(90)=1365.980647 p(95)=1844.859556
+    custom_cache_hit_latency.......: avg=46.810547   min=2.403294   med=35.898738  max=149.936362  p(90)=115.373794  p(95)=126.847768
+    custom_cache_hit_rate..........: 36.87% 2592 out of 7030
+    custom_cache_miss_latency......: avg=1302.496609 min=150.232113 med=811.804418 max=6036.444561 p(90)=3189.589845 p(95)=3814.782656
+    custom_db_read_latency.........: avg=460.810706  min=1.902309   med=117.128862 max=5602.660878 p(90)=1556.96401  p(95)=2364.065549
+    custom_db_write_latency........: avg=808.97523   min=33.150892  med=409.742613 max=4730.563741 p(90)=2187.098603 p(95)=2906.950565
+    custom_error_rate..............: 26.74% 3196 out of 11951
+
+    HTTP
+    http_req_duration..............: avg=612.22ms    min=1.83ms     med=244.03ms   max=6.03s       p(90)=1.74s       p(95)=2.48s 
+
+      { expected_response:true }...: avg=612.28ms    min=1.83ms     med=244.15ms   max=6.03s       p(90)=1.74s       p(95)=2.48s 
+
+    http_req_failed................: 0.01%  2 out of 18984
+    http_reqs......................: 18984  62.147869/s
+
+    EXECUTION
+    iteration_duration.............: avg=21.45s      min=6.1s       med=16.66s     max=44.02s      p(90)=37.24s      p(95)=39s   
+
+    iterations.....................: 703    2.301409/s
+    vus............................: 1      min=1             max=100
+    vus_max........................: 100    min=100           max=100
+
+    NETWORK
+    data_received..................: 171 MB 560 kB/s
+    data_sent......................: 7.4 MB 24 kB/s
+59556
+    custom_cache_hit_latency.......: avg=46.810547   min=2.403294   med=35.898738  max=149.936362  p(90)=115.373794  p(95)=126.847768
+    custom_cache_hit_rate..........: 36.87% 2592 out of 7030
+    custom_cache_miss_latency......: avg=1302.496609 min=150.232113 med=811.804418 max=6036.444561 p(90)=3189.589845 p(95)=3814.782656
+    custom_db_read_latency.........: avg=460.810706  min=1.902309   med=117.128862 max=5602.660878 p(90)=1556.96401  p(95)=2364.065549
+    custom_db_write_latency........: avg=808.97523   min=33.150892  med=409.742613 max=4730.563741 p(90)=2187.098603 p(95)=2906.950565
+    custom_error_rate..............: 26.74% 3196 out of 11951
+
+    HTTP
+    http_req_duration..............: avg=612.22ms    min=1.83ms     med=244.03ms   max=6.03s       p(90)=1.74s       p(95)=2.48s 
+
+      { expected_response:true }...: avg=612.28ms    min=1.83ms     med=244.15ms   max=6.03s       p(90)=1.74s       p(95)=2.48s 
+
+    http_req_failed................: 0.01%  2 out of 18984
+    http_reqs......................: 18984  62.147869/s
+
+    EXECUTION
+    iteration_duration.............: avg=21.45s      min=6.1s       med=16.66s     max=44.02s      p(90)=37.24s      p(95)=39s   
+
+    iterations.....................: 703    2.301409/s
+    vus............................: 1      min=1             max=100
+    vus_max........................: 100    min=100           max=100
+
+    NETWORK
+    data_received..................: 171 MB 560 kB/s

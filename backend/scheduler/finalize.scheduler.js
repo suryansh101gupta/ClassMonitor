@@ -1,10 +1,13 @@
 import cron from "node-cron";
 import db from "../config/mysql.js";
-import { calculateAttendanceFromWindows, clearLecture } from "../services/attendance.service.js";
+import { calculateAttendanceFromWindows, clearLecture } from "../services/attendance_service.js";
 import "../globals.js";
 
 // runs every minute
-cron.schedule("* * * * *", async () => {
+// cron.schedule("* * * * *", async () => {
+// cron.schedule("*/5 7-21 * * 1-6", async () => {
+// cron.schedule("0,5,15,30,45 7-21 * * 1-6", async () => {
+cron.schedule("* 7-21 * * 1-6", async () => {
   try {
     // Use global class_id if available, otherwise default to 3
     const classId = global.activeClassId || 3;

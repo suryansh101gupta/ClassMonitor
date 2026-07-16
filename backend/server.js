@@ -18,6 +18,7 @@ import subjectRouter from './routes/subjectRoutes.js';
 import adminDataRouter from './routes/adminDataRoutes.js';
 import classRouter from './routes/classRoutes.js';
 import timetableRouter from './routes/timetableRoutes.js';
+import teacherDataRouter from './routes/teacherDataRoutes.js';
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -31,7 +32,7 @@ app.set("trust proxy", 1);
 
 app.use(express.json());
 app.use(cookieparser());
-app.use(cors({origin:'https://class-monitor-two.vercel.app', credentials:true}));
+app.use(cors({origin:'http://localhost:5173', credentials:true}));
 app.use(express.urlencoded({ extended: true }));
 
 // API Endpoints
@@ -46,6 +47,8 @@ app.use('/user-data', userDataRouter);
 app.use("/attendance", attendanceRoutes);
 
 app.use('/teachers', teacherRouter);
+
+app.use('/teacher-data', teacherDataRouter);
 
 app.use('/admin', adminRouter);
 

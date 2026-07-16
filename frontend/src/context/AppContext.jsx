@@ -16,13 +16,15 @@ export const AppContextProvider = (props) => {
 
     const getAuthState = async () => {
         try{
-            const {data} = await axios.get(backendUrl + '/user/is-auth')
+            const {data} = await axios.get(backendUrl + '/user/is-auth', {withCredentials: true});
             if(data.success){
                 setIsLoggedin(true)
                 getUserData()
+            }else{
+                setIsLoggedin(false);
             }
         }catch(error){
-            if(error.response?.status !== 401){
+            if(error.response?.status !== 401 && error.response?.status !== 403){
                 toast.error(error.message)
             }
         }
@@ -30,13 +32,13 @@ export const AppContextProvider = (props) => {
 
     const getAdminAuthState = async () => {
         try{
-            const {data} = await axios.get(backendUrl + '/admin/is-admin-auth')
+            const {data} = await axios.get(backendUrl + '/admin/is-admin-auth', {withCredentials: true})
             if(data.success){
                 setIsLoggedin(true)
                 getAdminData()
             }
         }catch(error){
-            if(error.response?.status !== 401){
+            if(error.response?.status !== 401 && error.response?.status !== 403){
                 toast.error(error.message)
             }
         }
@@ -45,14 +47,14 @@ export const AppContextProvider = (props) => {
     // ✅ ADDED
     const getTeacherAuthState = async () => {
         try{
-            const {data} = await axios.get(backendUrl + '/teacher/is-teacher-auth')
+            const {data} = await axios.get(backendUrl + '/teachers/is-teacher-auth', {withCredentials: true})
             if(data.success){
                 setIsLoggedin(true)
                 getTeacherData()
             }
         }catch(error){
-            // Don't show toast for 401 errors - it's expected when not logged in
-            if(error.response?.status !== 401){
+            // Don't show toast for 401 and 403 errors - it's expected when not logged in
+            if(error.response?.status !== 401 && error.response?.status !== 403){
                 toast.error(error.message)
             }
         }
@@ -61,27 +63,33 @@ export const AppContextProvider = (props) => {
     const getUserData = async () => {
         try{
             const {data} = await axios.get(backendUrl + '/user-data/data')
-            data.success ? setUserData(data.userData) : toast.error(data.message)
+            data.success ? setUserData(data.userData) : console.log(data.message)
         }catch(error){
-            toast.error(error.message)
+            if(error.response?.status !== 401 && error.response?.status !== 403){
+                toast.error(error.message)
+            }
         }
     }
 
     const getAdminData = async () => {
         try{
             const {data} = await axios.get(backendUrl + '/admin-data/data')
-            data.success ? setAdminData(data.adminData) : toast.error(data.message)
+            data.success ? setAdminData(data.adminData) : console.log(data.message)
         }catch(error){
-            console.error(error)
-            toast.error(error.message)
+            if(error.response?.status !== 401 && error.response?.status !== 403){
+                console.error(error)
+                toast.error(error.message)
+            }
         }
     }
     const getTeacherData = async () => {
         try{
-            const {data} = await axios.get(backendUrl + '/teacher-data/data')
-            data.success ? setTeacherData(data.teacherData) : toast.error(data.message)
+            const {data} = await axios.get(backendUrl + '/teacher-data/data', {withCredentials: true})
+            data.success ? setTeacherData(data.teacherData) : console.log(data.message)
         }catch(error){
-            toast.error(error.message)
+            if(error.response?.status !== 401 && error.response?.status !== 403 && error.response?.status !== 404){
+                toast.error(error.message)
+            }
         }
     }
 

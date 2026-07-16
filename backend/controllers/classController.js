@@ -20,6 +20,8 @@ export const createClass = async (req, res) => {
 
         const savedClass = await newClass.save();
 
+        // const savedClass = await classModel.create({ name });
+
         try {
             // Sync with MySQL
             const sql = `

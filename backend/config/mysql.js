@@ -6,7 +6,7 @@ const pool = mysql.createPool({
     password: 'new_password',
     database: 'attendance_system',
     waitForConnections: true,  // wait if no free connections
-    connectionLimit: 100,       // increase from default 10
+    connectionLimit: 20,       // increase from default 10
     queueLimit: 0              // unlimited queued requests
 });
 

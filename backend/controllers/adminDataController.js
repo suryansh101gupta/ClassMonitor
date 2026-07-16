@@ -3,7 +3,6 @@ import adminModel from "../models/adminModel.js";
 export const getAdminData = async(req, res) => {
 
     try{
-
         const adminId = req.adminId;
         const admin = await adminModel.findById(adminId);
 

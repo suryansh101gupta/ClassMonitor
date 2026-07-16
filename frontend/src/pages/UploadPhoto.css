@@ -1,0 +1,272 @@
+/* UploadPhoto.css - Neo-brutalist Design matching ClassMonitor */
+
+.upload-photo-page {
+  min-height: 100vh;
+  background-color: #F4F0E6;
+  background-image:
+    linear-gradient(rgba(17,17,17,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(17,17,17,0.05) 1px, transparent 1px);
+  background-size: 30px 30px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  letter-spacing: -0.01em;
+  position: relative;
+  color: #111111;
+}
+
+/* Top Bar */
+.top-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  background: #ffffff;
+  border-bottom: 4px solid #111111;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 24px;
+  z-index: 100;
+}
+
+.top-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-shape {
+  width: 32px;
+  height: 32px;
+  background: #FF5722;
+  border: 2px solid #111111;
+  border-radius: 6px;
+  box-shadow: 2px 2px 0px #111111;
+}
+
+.brand-name {
+  font-size: 18px;
+  font-weight: 800;
+  color: #111111;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+}
+
+.top-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.icon-button {
+  width: 44px;
+  height: 44px;
+  background: #ffffff;
+  border: 3px solid #111111;
+  border-radius: 8px;
+  color: #111111;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+  font-size: 20px;
+  box-shadow: 3px 3px 0px #111111;
+}
+
+.icon-button:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0px #FF5722;
+}
+
+/* Content Wrapper */
+.content-wrapper {
+  padding-top: 64px;
+  min-height: calc(100vh - 64px);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 96px 24px 32px;
+}
+
+.form-container {
+  width: 100%;
+  max-width: 540px;
+  text-align: center;
+}
+
+.upload-title {
+  font-size: 2.2rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  color: #111111;
+  margin-bottom: 8px;
+  letter-spacing: -1px;
+}
+
+.upload-subtitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 32px;
+}
+
+/* Upload Card */
+.upload-card {
+  background: #ffffff;
+  border: 4px solid #111111;
+  border-radius: 12px;
+  padding: 32px;
+  box-shadow: 6px 6px 0px #111111;
+}
+
+/* Webcam Section */
+.webcam-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding-bottom: 24px;
+  border-bottom: 3px solid #111111;
+}
+
+.webcam-feed {
+  border-radius: 8px;
+  border: 3px solid #111111;
+  box-shadow: 4px 4px 0px #111111;
+}
+
+/* File Section */
+.file-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding-top: 24px;
+  padding-bottom: 24px;
+  border-bottom: 3px solid #111111;
+}
+
+/* Divider */
+.divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 0;
+  position: relative;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 3px;
+  background: #111111;
+}
+
+.divider span {
+  padding: 0 16px;
+  color: #111111;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+/* Action Buttons */
+.action-button {
+  width: 100%;
+  padding: 14px 24px;
+  border-radius: 8px;
+  font-weight: 800;
+  font-size: 15px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: 3px solid #111111;
+  box-shadow: 3px 3px 0px #111111;
+}
+
+.action-button.primary {
+  background: #FF5722;
+  color: #111111;
+}
+
+.action-button.primary:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0px #111111;
+}
+
+.action-button.secondary {
+  background: #F4F0E6;
+  color: #111111;
+}
+
+.action-button.secondary:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0px #FF5722;
+}
+
+/* Upload Button */
+.upload-button {
+  width: 100%;
+  padding: 16px 24px;
+  background: #111111;
+  color: #F4F0E6;
+  border-radius: 8px;
+  font-weight: 900;
+  font-size: 16px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: 3px solid #111111;
+  margin-top: 24px;
+  box-shadow: 4px 4px 0px #FF5722;
+}
+
+.upload-button:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px #FF5722;
+}
+
+/* Preview Section */
+.preview-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.preview-title {
+  color: #111111;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.preview-image {
+  width: 140px;
+  height: 140px;
+  border-radius: 12px;
+  object-fit: cover;
+  border: 4px solid #111111;
+  box-shadow: 4px 4px 0px #FF5722;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .content-wrapper {
+    padding: 90px 16px 24px;
+  }
+  
+  .form-container {
+    max-width: 100%;
+  }
+  
+  .upload-card {
+    padding: 20px;
+  }
+  
+  .webcam-feed {
+    width: 100%;
+    height: auto;
+  }
+}

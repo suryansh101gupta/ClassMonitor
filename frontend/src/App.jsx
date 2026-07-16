@@ -7,20 +7,21 @@ import UploadPhoto from './pages/UploadPhoto'
 import ResetPassword from './pages/ResetPassword'
 import { ToastContainer } from 'react-toastify';
 import AdminLogin from './pages/AdminLogin'
-import AdminHome from './pages/AdminHome'
 import AdminFrontPage from './components/AdminFrontPage'
 import TeacherLogin from "./pages/TeacherLogin";
 import TeacherFrontPage from './pages/TeacherFrontPage';
 import TimetableViewer from './pages/TimetableViewer';
 import StudentAttendanceCalendar from "./pages/StudentAttendanceCalendar";
+import Rag from './pages/Rag';
+import AttendanceDashboard from './pages/AttendanceDashboard';
 
 const App = () => {
   return (
     <div>
-      <ToastContainer/>
+      <ToastContainer position="top-center" />
       <Routes>
         <Route path='/' element={<Home/>}/>
-        <Route path='/admin-home' element={<AdminHome/>}/>
+        <Route path='/landing' element={<Home/>}/>
         <Route path='/admin-front-page' element={<AdminFrontPage/>}/>
         <Route path='/login' element={<Login/>}/>
         <Route path='/admin-login' element={<AdminLogin/>}/>
@@ -31,6 +32,8 @@ const App = () => {
         <Route path="/teacher-dashboard" element={<TeacherFrontPage />} />
         <Route path="/timetable-viewer" element={<TimetableViewer />} />
         <Route path="/student-calendar" element={<StudentAttendanceCalendar />} />
+        <Route path="/rag" element={<Rag />} />
+        <Route path="/my-attendance" element={<AttendanceDashboard />} />
         <Route path="*" element={<h1 className="text-center mt-10">Page Not Found</h1>} />
         <Route path="*" element={<h1>Wrong URL: {window.location.pathname}</h1>} />
       </Routes>

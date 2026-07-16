@@ -49,14 +49,35 @@ export async function getAllWindowData(lectureId) {
   const windowKeys = await client.keys(pattern);
   
   const windowData = {};
+  // for (const key of windowKeys) {
+  //   const windowId = key.split(':').pop();
+  //   const data = await client.hGetAll(key);
+  //   if (Object.keys(data).length > 0) {
+  //     windowData[windowId] = data;
+  //   }
+  // }
+  
+  // return windowData;
+
+  // IMPROVED PIPELINED VERSION
+  // Phase 1 — queue all commands, nothing sent to Redis yet
+  const pipeline = client.multi();
   for (const key of windowKeys) {
-    const windowId = key.split(':').pop();
-    const data = await client.hGetAll(key);
+    pipeline.hGetAll(key);  // just queuing, no await
+  }
+
+  // Phase 2 — send all at once, get all results together
+  const results = await pipeline.exec();
+
+  // Phase 3 — map results back to windowIds
+  for (let i = 0; i < windowKeys.length; i++) {
+    const windowId = windowKeys[i].split(':').pop();
+    const data = results[i];
     if (Object.keys(data).length > 0) {
       windowData[windowId] = data;
     }
   }
-  
+
   return windowData;
 }
 
@@ -86,8 +107,8 @@ export async function calculateAttendanceFromWindows(lectureId, totalWindows, pr
   
   // Collect all unique students across all windows
   const allStudents = new Set();
-  for (const windowData of Object.values(windowData)) {
-    Object.keys(windowData).forEach(rollNo => allStudents.add(rollNo));
+  for (const windowEntries of Object.values(windowData)) {
+    Object.keys(windowEntries).forEach(rollNo => allStudents.add(rollNo));
   }
 
   // Calculate attendance for each student
@@ -95,9 +116,9 @@ export async function calculateAttendanceFromWindows(lectureId, totalWindows, pr
     let presentWindows = 0;
     
     // Check each window for student presence
-    for (const [windowId, windowData] of Object.entries(windowData)) {
-      const frameCount = parseInt(windowData[rollNo] || "0");
-      const totalFrames = parseInt(Object.values(windowData).reduce((sum, count) => sum + parseInt(count), 0));
+    for (const [windowId, windowEntries] of Object.entries(windowData)) {
+      const frameCount = parseInt(windowEntries[rollNo] || "0");
+      const totalFrames = parseInt(Object.values(windowEntries).reduce((sum, count) => sum + parseInt(count), 0));
       
       if (totalFrames > 0) {
         const presenceRatio = frameCount / totalFrames;

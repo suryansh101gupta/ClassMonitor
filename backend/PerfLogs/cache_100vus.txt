@@ -1,0 +1,83 @@
+time="2026-05-07T15:10:44Z" level=info msg="\n📊 CACHE TEST SUMMARY" source=console
+time="2026-05-07T15:10:44Z" level=info msg="===================" source=console        
+time="2026-05-07T15:10:44Z" level=info msg="Total Requests: undefined" source=console  
+time="2026-05-07T15:10:44Z" level=info msg="Cache Hits: undefined (NaN%)" source=console
+time="2026-05-07T15:10:44Z" level=info msg="Cache Misses: undefined (NaN%)" source=console
+time="2026-05-07T15:10:44Z" level=info msg="❌ Cache performance: POOR (<50% hit rate)" source=console
+time="2026-05-07T15:10:44Z" level=info msg="\nEndpoint Cache States:" source=console   
+time="2026-05-07T15:10:44Z" level=info msg="✅ Test completed successfully" source=console
+
+
+  █ THRESHOLDS
+
+    cache_hit_latency
+    ✓ 'p(95)<100' p(95)=66.654874
+
+    cache_hit_rate
+    ✓ 'rate>0.6' rate=99.39%
+
+    cache_miss_latency
+    ✗ 'p(95)<400' p(95)=793.438903
+
+    http_req_duration
+    ✓ 'p(95)<300' p(95)=67.96ms
+
+
+  █ TOTAL RESULTS
+
+    checks_total.......: 228344 759.305867/s
+    checks_succeeded...: 99.92% 228172 out of 228344
+    checks_failed......: 0.07%  172 out of 228344
+
+    ✓ subjects-req-1: status 200
+    ✓ subjects-req-1: has data
+    ✗ subjects-req-1: response time
+      ↳  99% — ✓ 13418 / ✗ 14
+    ✓ subjects-req-2: status 200
+    ✓ subjects-req-2: has data
+    ✗ subjects-req-2: faster than first
+      ↳  99% — ✓ 13355 / ✗ 77
+    ✓ subjects-req-3: status 200
+    ✓ subjects-req-3: has data
+    ✗ subjects-req-3: cache hit
+      ↳  99% — ✓ 13351 / ✗ 81
+    ✓ teachers-req-1: status 200
+    ✓ teachers-req-1: has data
+    ✓ teachers-req-2: status 200
+    ✓ teachers-req-2: has data
+    ✓ classes-req-1: status 200
+    ✓ classes-req-1: has data
+    ✓ classes-req-2: status 200
+    ✓ classes-req-2: has data
+
+    CUSTOM
+    cache_hit_latency..............: avg=27.965079  min=3.060259   med=20.182941  max=213.889156 p(90)=58.869445  p(95)=66.654874
+    cache_hit_rate.................: 99.39% 93457 out of 94024
+    cache_hits.....................: 93457  310.769928/s
+    cache_miss_latency.............: avg=223.701702 min=100.072623 med=120.217547 max=1236.10459 p(90)=429.423741 p(95)=793.438903
+    cache_miss_rate................: 0.60%  567 out of 94024
+    cache_misses...................: 567    1.885429/s
+    total_cache_requests...........: 94024  312.655357/s
+
+    HTTP
+    http_req_duration..............: avg=29.14ms    min=3.06ms     med=20.4ms     max=1.23s      p(90)=59.46ms    p(95)=67.96ms
+      { expected_response:true }...: avg=29.14ms    min=3.06ms     med=20.4ms     max=1.23s      p(90)=59.46ms    p(95)=67.96ms
+    http_req_failed................: 0.00%  0 out of 94025
+    http_reqs......................: 94025  312.658682/s
+
+    EXECUTION
+    iteration_duration.............: avg=1.07s      min=660.24ms   med=1.06s      max=2.49s      p(90)=1.35s      p(95)=1.43s
+    iterations.....................: 13432  44.665051/s
+    vus............................: 2      min=1              max=100
+    vus_max........................: 100    min=100            max=100
+
+    NETWORK
+    data_received..................: 2.7 GB 9.1 MB/s
+    data_sent......................: 27 MB  89 kB/s
+
+
+
+
+running (5m00.7s), 000/100 VUs, 13432 complete and 0 interrupted iterations
+default ✓ [ 100% ] 000/100 VUs  5m0s
+time="2026-05-07T15:10:44Z" level=error msg="thresholds on metrics 'cache_miss_latency' have been crossed"

@@ -10,7 +10,7 @@ adminRouter.post('/login', loginAdmin);
 
 adminRouter.get('/is-admin-auth', adminAuth, isAdminAuthenticated);
 
-adminRouter.post('/logout', adminAuth, logoutAdmin);
+adminRouter.post('/logout', logoutAdmin);
 
 adminRouter.post('/assign-sub-teacher', adminAuth, assignSubjectToTeacher);
 

@@ -1,5 +1,5 @@
 import express from 'express';
-import { getUploadUrl, isAuthenticated, login, logout, register, resetPassword, sendResetOtp, sendVerifyOtp, updatePhoto, verifyEmail, getClasses, getAttendanceByLecture, getAttendanceByRange, getUserTimetableByClass } from '../controllers/userController.js';
+import { getUploadUrl, isAuthenticated, login, logout, register, resetPassword, sendResetOtp, sendVerifyOtp, updatePhoto, verifyEmail, getClasses, getAttendanceByLecture, getAttendanceByRange, getUserTimetableByClass, getAttendanceSummary, getAttendanceDetail } from '../controllers/userController.js';
 import userAuth from '../middlewares/userAuth.js';
 
 
@@ -32,6 +32,10 @@ userRouter.get('/get-attendance', userAuth, getAttendanceByLecture);
 userRouter.get('/get-attendance-range', userAuth, getAttendanceByRange);
 
 userRouter.get('/get-user-timetable', userAuth, getUserTimetableByClass);
+
+userRouter.get('/attendance-summary', userAuth, getAttendanceSummary);
+
+userRouter.get('/attendance-detail', userAuth, getAttendanceDetail);
 
 
 export default userRouter;

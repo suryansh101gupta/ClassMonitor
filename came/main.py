@@ -39,7 +39,68 @@ WINDOW_DURATION = 3  # Window duration in seconds
 CLASS_ID = os.getenv("CLASS_ID")
 CAM_INDEX = int(os.getenv("CAM_INDEX", 0))
 
+# Tracking configuration
+DETECTION_INTERVAL = 15  # Run face detection every N frames
+TRACKER_MAX_AGE = 40  # Remove trackers older than this many frames
+
+# Create tracker function that works with different OpenCV versions
+def create_csrt_tracker():
+    """Create tracker compatible with different OpenCV versions."""
+    trackers_to_try = [
+        # Try CSRT first (best accuracy)
+        ('CSRT', lambda: cv2.TrackerCSRT_create()),
+        ('CSRT_new', lambda: cv2.csrt.TrackerCSRT_create()),
+        # Try KCF next (good balance)
+        ('KCF', lambda: cv2.TrackerKCF_create()),
+        ('KCF_new', lambda: cv2.kcf.TrackerKCF_create()),
+        # Try MOSSE last (basic but widely available)
+        ('MOSSE', lambda: cv2.TrackerMOSSE_create()),
+        ('MOSSE_new', lambda: cv2.legacy.TrackerMOSSE_create()),
+    ]
+    
+    for name, create_func in trackers_to_try:
+        try:
+            tracker = create_func()
+            if name != 'CSRT':
+                print(f"Warning: Using {name} tracker instead of CSRT")
+            return tracker
+        except AttributeError:
+            continue
+    
+    # If no trackers work, return None and we'll skip tracking
+    print("Warning: No OpenCV trackers available. Running detection-only mode.")
+    return None
+
 print("CAM_INDEX:", CAM_INDEX, "CLASS_ID:", CLASS_ID)
+
+
+class FaceTracker:
+    """Simple tracker class to manage individual face tracking instances."""
+    
+    def __init__(self, bbox, roll_no=None):
+        """Initialize a new tracker with bounding box and optional roll number."""
+        self.tracker = create_csrt_tracker()
+        self.roll_no = roll_no  # Recognized identity (None if unknown)
+        self.age = 0  # Frames since last successful detection
+        self.bbox = bbox  # Current bounding box (x, y, w, h)
+        self.tracking_enabled = self.tracker is not None
+        
+    def initialize(self, frame):
+        """Initialize the tracker with the first frame."""
+        if not self.tracking_enabled:
+            return False
+        success = self.tracker.init(frame, self.bbox)
+        return success
+        
+    def update(self, frame):
+        """Update tracker position and return success status."""
+        if not self.tracking_enabled:
+            # For detection-only mode, just return the last known position
+            return True, self.bbox
+        success, bbox = self.tracker.update(frame)
+        if success:
+            self.bbox = bbox
+        return success, bbox
 
 def get_mongo_client():
     if not MONGO_URI:
@@ -93,7 +154,7 @@ def main():
 
     frame_count = 0
     last_cache_reload = 0
-    last_faces = []  # [(top, right, bottom, left, name), ...]
+    face_trackers = []  # List of FaceTracker objects
     
     # Window-based tracking
     window_start_time = time.time()
@@ -102,7 +163,7 @@ def main():
     total_frames_in_window = 0
 
     print("Camera started. Press 'q' to quit.")
-    print("Face detection runs every 3 frames to reduce CPU load.")
+    print("Face detection runs every 15 frames with CSRT tracking between detections.")
     print("Window-based attendance: 3-second windows with presence ratio calculation.")
 
     while True:
@@ -118,19 +179,61 @@ def main():
             known_names, known_roll_nos, known_encodings = load_known_faces()
             last_cache_reload = frame_count
 
-        # Process every few frames to reduce CPU load
-        if frame_count % 30 == 0:
+        # === DETECTION + TRACKING PIPELINE ===
+        
+        # 1. Update all existing trackers and increment age
+        updated_trackers = []
+        for tracker in face_trackers:
+            success, bbox = tracker.update(frame)
+            if success:
+                tracker.age += 1
+                updated_trackers.append(tracker)
+            # Remove failed trackers
+        face_trackers = updated_trackers
+        
+        # 2. Remove old trackers that exceed max age
+        face_trackers = [t for t in face_trackers if t.age <= TRACKER_MAX_AGE]
+        
+        # 3. Run face detection at fixed intervals
+        if frame_count % DETECTION_INTERVAL == 0:
             rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             face_locations = face_recognition.face_locations(rgb)
             face_encodings = face_recognition.face_encodings(rgb, face_locations)
-            last_faces = []
+            
+            # Process detected faces and create/update trackers
             for (top, right, bottom, left), face_encoding in zip(face_locations, face_encodings):
-                name, roll_no = find_best_match(face_encoding, known_encodings, known_names, known_roll_nos)
-                last_faces.append((top, right, bottom, left, roll_no))
+                # Convert face_recognition bbox to OpenCV format (x, y, w, h)
+                bbox = (left, top, right - left, bottom - top)
+                
+                # Try to recognize the face
+                match_result = find_best_match(face_encoding, known_encodings, known_names, known_roll_nos)
+                if match_result:
+                    name, roll_no = match_result
+                else:
+                    name, roll_no = "Unknown", None
+                
+                # Create new tracker for detected face
+                new_tracker = FaceTracker(bbox, roll_no)
+                if new_tracker.tracking_enabled:
+                    if new_tracker.initialize(frame):
+                        new_tracker.age = 0  # Reset age for newly detected faces
+                        face_trackers.append(new_tracker)
+                else:
+                    # In detection-only mode, just add the tracker without initialization
+                    new_tracker.age = 0
+                    face_trackers.append(new_tracker)
+        
+        # 4. Collect tracked faces for attendance counting
+        tracked_faces = []
+        for tracker in face_trackers:
+            x, y, w, h = tracker.bbox
+            # Convert OpenCV bbox back to face_recognition format
+            top, right, bottom, left = y, x + w, y + h, x
+            tracked_faces.append((top, right, bottom, left, tracker.roll_no))
 
         # Track recognized students in current window
         recognized_in_frame = set()
-        for (_, _, _, _, roll_no) in last_faces:
+        for (_, _, _, _, roll_no) in tracked_faces:
             if roll_no and roll_no != "Unknown":
                 recognized_in_frame.add(roll_no)
         
@@ -169,8 +272,8 @@ def main():
             window_student_counts.clear()
             total_frames_in_window = 0
 
-        # Draw last detected faces on every frame for smooth display
-        for top, right, bottom, left, roll_no in last_faces:
+        # Draw tracked faces on every frame for smooth display
+        for top, right, bottom, left, roll_no in tracked_faces:
             color = (0, 255, 0) if roll_no else (0, 0, 255)
             cv2.rectangle(frame, (left, top), (right, bottom), color, 2)
             label = str(roll_no) if roll_no else "Unknown"

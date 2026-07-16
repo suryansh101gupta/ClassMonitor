@@ -39,14 +39,18 @@ export const saveTimetable = async (req, res) => {
         // Process events to match SQL schema with generated lecture IDs
         const processedEvents = events.map((event, index) => {
             const startDate = new Date(event.start_time);
-            const lectureDate = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+            // Store lecture_date as a plain 'YYYY-MM-DD' string (not a JS Date object)
+            // so mysql2 passes it as a literal and MySQL's DATE() comparisons use the
+            // correct local calendar date without any UTC timezone shift (IST = UTC+5:30).
+            const pad = n => String(n).padStart(2, '0');
+            const lectureDateStr = `${startDate.getFullYear()}-${pad(startDate.getMonth() + 1)}-${pad(startDate.getDate())}`;
             
             return {
                 lecture_id: `lecture_${classId}_${Date.now()}_${index}`,
                 class_id: classId,
                 subject_id: event.subject_id,
                 teacher_id: event.teacher_id,
-                lecture_date: lectureDate,
+                lecture_date: lectureDateStr,
                 start_time: startDate.toTimeString().slice(0, 8), // HH:MM:SS format
                 end_time: new Date(event.end_time).toTimeString().slice(0, 8),
                 created_at: new Date(),

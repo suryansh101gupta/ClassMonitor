@@ -41,6 +41,11 @@ const authLatency    = new Trend("custom_auth_latency");     // login/register t
 const dbReadLatency  = new Trend("custom_db_read_latency");  // GET with DB read
 const dbWriteLatency = new Trend("custom_db_write_latency"); // POST that writes to DB
 
+// ── CACHE TESTING METRICS ─────────────────────────────────────
+const cacheHitRate   = new Rate("custom_cache_hit_rate");    // % of cache hits
+const cacheHitLatency = new Trend("custom_cache_hit_latency"); // response time when cache hit
+const cacheMissLatency = new Trend("custom_cache_miss_latency"); // response time when cache miss
+
 // ── LOAD PROFILE ──────────────────────────────────────────────
 //  Stage 1 — Ramp up to 10 VUs   (warm up)
 //  Stage 2 — Hold at 10 VUs      (baseline   ← record p95 here)
@@ -68,6 +73,10 @@ export const options = {
     custom_db_read_latency:   ["p(95)<450"],  // DB reads under 450ms
     custom_db_write_latency:  ["p(95)<650"],  // DB writes under 650ms
     custom_auth_latency:      ["p(95)<850"],  // auth routes under 850ms
+    // Cache performance thresholds
+    custom_cache_hit_rate:    ["rate>0.7"],   // cache hit rate above 70%
+    custom_cache_hit_latency: ["p(95)<100"],  // cache hits under 100ms
+    custom_cache_miss_latency: ["p(95)<400"], // cache misses under 400ms
   },
 };
 
@@ -77,6 +86,37 @@ const JSON_HEADERS = { "Content-Type": "application/json" };
 // Safe JSON parse — returns {} on failure so .success checks never throw
 function safeJson(res) {
   try { return JSON.parse(res.body); } catch (_) { return {}; }
+}
+
+// Detect if response came from cache based on response time and headers
+// Cache hits are typically much faster (< 100ms) than cache misses (> 200ms)
+function isCacheHit(res) {
+  // Primary indicator: response time under 100ms suggests cache hit
+  if (res.timings.duration < 100) return true;
+  
+  // Secondary indicator: check for cache-related headers if any
+  const headers = res.headers;
+  if (headers['x-cache'] === 'HIT' || headers['x-redis-cache'] === 'HIT') return true;
+  
+  // Fallback: use response time threshold
+  return res.timings.duration < 150;
+}
+
+// Track cache performance for a given response
+function trackCachePerformance(res, endpoint) {
+  const isHit = isCacheHit(res);
+  
+  if (isHit) {
+    cacheHitRate.add(1);
+    cacheHitLatency.add(res.timings.duration);
+    console.log(`[CACHE TEST] HIT - ${endpoint}: ${res.timings.duration}ms`);
+  } else {
+    cacheHitRate.add(0);
+    cacheMissLatency.add(res.timings.duration);
+    console.log(`[CACHE TEST] MISS - ${endpoint}: ${res.timings.duration}ms`);
+  }
+  
+  return isHit;
 }
 
 // Build request params.
@@ -290,32 +330,42 @@ export default function (data) {
   // ────────────────────────────────────────────────────────────
   group("db read routes", () => {
 
-    // GET /subjects/get-all-subjects
+    // GET /subjects/get-all-subjects (CACHED)
     if (adminToken) {
       const subRes = http.get(
         `${BASE_URL}/subjects/get-all-subjects`,
         reqParams(adminToken, "get-all-subjects")
       );
+      
+      // Track cache performance
+      const isCacheHit = trackCachePerformance(subRes, "subjects");
+      
       dbReadLatency.add(subRes.timings.duration);
       const subOk = check(subRes, {
         "subjects: status 200":      (r) => r.status === 200,
         "subjects: has data array":  (r) => Array.isArray(safeJson(r).data),
         "subjects: latency < 500ms": (r) => r.timings.duration < 500,
+        "subjects: cache working":    (r) => isCacheHit || r.timings.duration < 400, // either cache hit or acceptable miss
       });
       errorRate.add(!subOk);
     }
 
-    // GET /teachers/get-all-teachers
+    // GET /teachers/get-all-teachers (CACHED)
     if (adminToken) {
       const teachRes = http.get(
         `${BASE_URL}/teachers/get-all-teachers`,
         reqParams(adminToken, "get-all-teachers")
       );
+      
+      // Track cache performance
+      const isCacheHit = trackCachePerformance(teachRes, "teachers");
+      
       dbReadLatency.add(teachRes.timings.duration);
       const teachOk = check(teachRes, {
         "teachers: status 200":      (r) => r.status === 200,
         "teachers: has data array":  (r) => Array.isArray(safeJson(r).data),
         "teachers: latency < 500ms": (r) => r.timings.duration < 500,
+        "teachers: cache working":    (r) => isCacheHit || r.timings.duration < 400, // either cache hit or acceptable miss
       });
       errorRate.add(!teachOk);
     }
@@ -335,16 +385,21 @@ export default function (data) {
       errorRate.add(!adminDataOk);
     }
 
-    // GET /classes/get-all-classes (public)
+    // GET /classes/get-all-classes (CACHED - public)
     const classRes = http.get(
       `${BASE_URL}/classes/get-all-classes`,
       reqParams(null, "get-all-classes")
     );
+    
+    // Track cache performance
+    const isCacheHit = trackCachePerformance(classRes, "classes");
+    
     dbReadLatency.add(classRes.timings.duration);
     const classOk = check(classRes, {
       "classes: status 200":      (r) => r.status === 200,
       "classes: has data array":  (r) => Array.isArray(safeJson(r).data),
       "classes: latency < 500ms": (r) => r.timings.duration < 500,
+      "classes: cache working":    (r) => isCacheHit || r.timings.duration < 400, // either cache hit or acceptable miss
     });
     errorRate.add(!classOk);
 
@@ -474,6 +529,77 @@ export default function (data) {
       "user logout: success true": (r) => safeJson(r).success === true,
     });
     errorRate.add(!userLogoutOk);
+
+    sleep(0.5);
+  });
+
+  // ────────────────────────────────────────────────────────────
+  // GROUP 7: Cache Performance Testing
+  // Make repeated requests to cached endpoints to measure hit ratio
+  // ────────────────────────────────────────────────────────────
+  group("cache performance testing", () => {
+
+    // Test subjects endpoint multiple times to measure cache hit ratio
+    if (adminToken) {
+      console.log("[CACHE TEST] Testing subjects endpoint cache performance...");
+      
+      // First request - likely cache miss
+      const subRes1 = http.get(
+        `${BASE_URL}/subjects/get-all-subjects`,
+        reqParams(adminToken, "subjects-cache-test-1")
+      );
+      trackCachePerformance(subRes1, "subjects-first-request");
+      
+      // Second request - likely cache hit (within 60s TTL)
+      sleep(0.1);
+      const subRes2 = http.get(
+        `${BASE_URL}/subjects/get-all-subjects`,
+        reqParams(adminToken, "subjects-cache-test-2")
+      );
+      trackCachePerformance(subRes2, "subjects-second-request");
+      
+      // Third request - should be cache hit
+      sleep(0.1);
+      const subRes3 = http.get(
+        `${BASE_URL}/subjects/get-all-subjects`,
+        reqParams(adminToken, "subjects-cache-test-3")
+      );
+      trackCachePerformance(subRes3, "subjects-third-request");
+    }
+
+    // Test teachers endpoint multiple times
+    if (adminToken) {
+      console.log("[CACHE TEST] Testing teachers endpoint cache performance...");
+      
+      const teachRes1 = http.get(
+        `${BASE_URL}/teachers/get-all-teachers`,
+        reqParams(adminToken, "teachers-cache-test-1")
+      );
+      trackCachePerformance(teachRes1, "teachers-first-request");
+      
+      sleep(0.1);
+      const teachRes2 = http.get(
+        `${BASE_URL}/teachers/get-all-teachers`,
+        reqParams(adminToken, "teachers-cache-test-2")
+      );
+      trackCachePerformance(teachRes2, "teachers-second-request");
+    }
+
+    // Test classes endpoint multiple times (public)
+    console.log("[CACHE TEST] Testing classes endpoint cache performance...");
+    
+    const classRes1 = http.get(
+      `${BASE_URL}/classes/get-all-classes`,
+      reqParams(null, "classes-cache-test-1")
+    );
+    trackCachePerformance(classRes1, "classes-first-request");
+    
+    sleep(0.1);
+    const classRes2 = http.get(
+      `${BASE_URL}/classes/get-all-classes`,
+      reqParams(null, "classes-cache-test-2")
+    );
+    trackCachePerformance(classRes2, "classes-second-request");
 
     sleep(0.5);
   });

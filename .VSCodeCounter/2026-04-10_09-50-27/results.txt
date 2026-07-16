@@ -1,0 +1,92 @@
+Date : 2026-04-10 09:50:27
+Directory : c:\Users\surya\OneDrive\Desktop\ClassMonitor\backend
+Total : 54 files,  199540 codes, 613 comments, 1157 blanks, all 201310 lines
+
+Languages
++------------+------------+------------+------------+------------+------------+
+| language   | files      | code       | comment    | blank      | total      |
++------------+------------+------------+------------+------------+------------+
+| JSON       |          3 |    173,785 |          0 |          3 |    173,788 |
+| HTML       |          1 |     21,730 |          1 |        236 |     21,967 |
+| JavaScript |         49 |      4,007 |        609 |        915 |      5,531 |
+| MS SQL     |          1 |         18 |          3 |          3 |         24 |
++------------+------------+------------+------------+------------+------------+
+
+Directories
++----------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                               | files      | code       | comment    | blank      | total      |
++----------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                  |         54 |    199,540 |        613 |      1,157 |    201,310 |
+| . (Files)                                                                                          |         12 |    175,525 |        428 |        363 |    176,316 |
+| .clinic                                                                                            |          1 |     21,730 |          1 |        236 |     21,967 |
+| config                                                                                             |          6 |        264 |          0 |         34 |        298 |
+| controllers                                                                                        |         10 |      1,352 |        121 |        331 |      1,804 |
+| middlewares                                                                                        |          4 |        104 |         24 |         37 |        165 |
+| migrations                                                                                         |          1 |         18 |          3 |          3 |         24 |
+| models                                                                                             |          6 |        204 |          0 |         26 |        230 |
+| routes                                                                                             |         10 |         91 |          1 |         62 |        154 |
+| scheduler                                                                                          |          2 |        101 |         17 |         26 |        144 |
+| scripts                                                                                            |          1 |          9 |          1 |          1 |         11 |
+| services                                                                                           |          1 |        142 |         17 |         38 |        197 |
++----------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++----------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| filename                                                                                           | language   | code       | comment    | blank      | total      |
++----------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| c:\Users\surya\OneDrive\Desktop\ClassMonitor\backend\.clinic\22220.clinic-doctor.html              | HTML       |     21,730 |          1 |        236 |     21,967 |
+| c:\Users\surya\OneDrive\Desktop\ClassMonitor\backend\admin-load-test.js                            | JavaScript |        248 |         47 |         50 |        345 |
+| c:\Users\surya\OneDrive\Desktop\ClassMonitor\backend\baseline.json                                 | JSON       |    170,209 |          0 |          1 |    170,210 |
+| c:\Users\surya\OneDrive\Desktop\ClassMonitor\backend\cache-test.js                                 | JavaScript |        217 |         38 |         59 |        314 |
+| c:\Users\surya\OneDrive\Desktop\ClassMonitor\backend\config\emailTemplates.js                      | JavaScript |        200 |          0 |         19 |        219 |
+| c:\Users\surya\OneDrive\Desktop\ClassMonitor\backend\config\mongodb.js                             | JavaScript |         18 |          0 |          4 |         22 |
+| c:\Users\surya\OneDrive\Desktop\ClassMonitor\backend\config\mysql.js                               | JavaScript |         11 |          0 |          2 |         13 |
+| c:\Users\surya\OneDrive\Desktop\ClassMonitor\backend\config\nodemailer.js                          | JavaScript |          9 |          0 |          3 |         12 |
+| c:\Users\surya\OneDrive\Desktop\ClassMonitor\backend\config\redis.js                               | JavaScript |         17 |          0 |          4 |         21 |
+| c:\Users\surya\OneDrive\Desktop\ClassMonitor\backend\config\s3.js                                  | JavaScript |          9 |          0 |          2 |         11 |
+| c:\Users\surya\OneDrive\Desktop\ClassMonitor\backend\controllers\adminController.js                | JavaScript |        160 |         56 |         49 |        265 |
+| c:\Users\surya\OneDrive\Desktop\ClassMonitor\backend\controllers\adminDataController.js            | JavaScript |         13 |          0 |          5 |         18 |
+| c:\Users\surya\OneDrive\Desktop\ClassMonitor\backend\controllers\attendance.controller.js          | JavaScript |         26 |          7 |          8 |         41 |
+| c:\Users\surya\OneDrive\Desktop\ClassMonitor\backend\controllers\classController.js                | JavaScript |         61 |          5 |         17 |         83 |
+| c:\Users\surya\OneDrive\Desktop\ClassMonitor\backend\controllers\subjectController.js              | JavaScript |         69 |          6 |         17 |         92 |
+| c:\Users\surya\OneDrive\Desktop\ClassMonitor\backend\controllers\teacherDataController.js          | JavaScript |         13 |          0 |          6 |         19 |
+| c:\Users\surya\OneDrive\Desktop\ClassMonitor\backend\controllers\teacher_controller.js             | JavaScript |        243 |          6 |         54 |        303 |
+| c:\Users\surya\OneDrive\Desktop\ClassMonitor\backend\controllers\timetableController.js            | JavaScript |        266 |         16 |         45 |        327 |
+| c:\Users\surya\OneDrive\Desktop\ClassMonitor\backend\controllers\userController.js                 | JavaScript |        488 |         25 |        124 |        637 |
+| c:\Users\surya\OneDrive\Desktop\ClassMonitor\backend\controllers\userDataController.js             | JavaScript |         13 |          0 |          6 |         19 |
+| c:\Users\surya\OneDrive\Desktop\ClassMonitor\backend\generateKey.js                                | JavaScript |          3 |          0 |          1 |          4 |
+| c:\Users\surya\OneDrive\Desktop\ClassMonitor\backend\globals.js                                    | JavaScript |          9 |          0 |          3 |         12 |
+| c:\Users\surya\OneDrive\Desktop\ClassMonitor\backend\load-test-wo-cache.js                         | JavaScript |        338 |        112 |         51 |        501 |
+| c:\Users\surya\OneDrive\Desktop\ClassMonitor\backend\load-test.js                                  | JavaScript |        418 |        133 |         75 |        626 |
+| c:\Users\surya\OneDrive\Desktop\ClassMonitor\backend\middlewares\adminAuth.js                      | JavaScript |         18 |          0 |          7 |         25 |
+| c:\Users\surya\OneDrive\Desktop\ClassMonitor\backend\middlewares\redis_middleware.js               | JavaScript |         44 |         24 |         14 |         82 |
+| c:\Users\surya\OneDrive\Desktop\ClassMonitor\backend\middlewares\teacherAuth.js                    | JavaScript |         21 |          0 |          8 |         29 |
+| c:\Users\surya\OneDrive\Desktop\ClassMonitor\backend\middlewares\userAuth.js                       | JavaScript |         21 |          0 |          8 |         29 |
+| c:\Users\surya\OneDrive\Desktop\ClassMonitor\backend\migrations\create_window_attendance_table.sql | MS SQL     |         18 |          3 |          3 |         24 |
+| c:\Users\surya\OneDrive\Desktop\ClassMonitor\backend\models\adminModel.js                          | JavaScript |         22 |          0 |          6 |         28 |
+| c:\Users\surya\OneDrive\Desktop\ClassMonitor\backend\models\classModel.js                          | JavaScript |         12 |          0 |          4 |         16 |
+| c:\Users\surya\OneDrive\Desktop\ClassMonitor\backend\models\subjectModel.js                        | JavaScript |         15 |          0 |          4 |         19 |
+| c:\Users\surya\OneDrive\Desktop\ClassMonitor\backend\models\teacher_model.js                       | JavaScript |         28 |          0 |          4 |         32 |
+| c:\Users\surya\OneDrive\Desktop\ClassMonitor\backend\models\timetableModel.js                      | JavaScript |         47 |          0 |          4 |         51 |
+| c:\Users\surya\OneDrive\Desktop\ClassMonitor\backend\models\userModel.js                           | JavaScript |         80 |          0 |          4 |         84 |
+| c:\Users\surya\OneDrive\Desktop\ClassMonitor\backend\package-lock.json                             | JSON       |      3,543 |          0 |          1 |      3,544 |
+| c:\Users\surya\OneDrive\Desktop\ClassMonitor\backend\package.json                                  | JSON       |         33 |          0 |          1 |         34 |
+| c:\Users\surya\OneDrive\Desktop\ClassMonitor\backend\routes\adminDataRoutes.js                     | JavaScript |          6 |          0 |          3 |          9 |
+| c:\Users\surya\OneDrive\Desktop\ClassMonitor\backend\routes\adminRoutes.js                         | JavaScript |         10 |          0 |          7 |         17 |
+| c:\Users\surya\OneDrive\Desktop\ClassMonitor\backend\routes\attendance.routes.js                   | JavaScript |          5 |          1 |          3 |          9 |
+| c:\Users\surya\OneDrive\Desktop\ClassMonitor\backend\routes\classRoutes.js                         | JavaScript |          8 |          0 |          5 |         13 |
+| c:\Users\surya\OneDrive\Desktop\ClassMonitor\backend\routes\subjectRoutes.js                       | JavaScript |          8 |          0 |          4 |         12 |
+| c:\Users\surya\OneDrive\Desktop\ClassMonitor\backend\routes\teacherDataRoutes.js                   | JavaScript |          6 |          0 |          3 |          9 |
+| c:\Users\surya\OneDrive\Desktop\ClassMonitor\backend\routes\teacher_routes.js                      | JavaScript |         14 |          0 |          9 |         23 |
+| c:\Users\surya\OneDrive\Desktop\ClassMonitor\backend\routes\timetableRoutes.js                     | JavaScript |          9 |          0 |          7 |         16 |
+| c:\Users\surya\OneDrive\Desktop\ClassMonitor\backend\routes\userDataRoutes.js                      | JavaScript |          6 |          0 |          3 |          9 |
+| c:\Users\surya\OneDrive\Desktop\ClassMonitor\backend\routes\userRoutes.js                          | JavaScript |         19 |          0 |         18 |         37 |
+| c:\Users\surya\OneDrive\Desktop\ClassMonitor\backend\scheduler\finalize.scheduler.js               | JavaScript |         71 |         14 |         20 |        105 |
+| c:\Users\surya\OneDrive\Desktop\ClassMonitor\backend\scheduler\lecture.scheduler.js                | JavaScript |         30 |          3 |          6 |         39 |
+| c:\Users\surya\OneDrive\Desktop\ClassMonitor\backend\scripts\import-check.js                       | JavaScript |          9 |          1 |          1 |         11 |
+| c:\Users\surya\OneDrive\Desktop\ClassMonitor\backend\server.js                                     | JavaScript |         41 |          3 |         21 |         65 |
+| c:\Users\surya\OneDrive\Desktop\ClassMonitor\backend\services\attendance.service.js                | JavaScript |        142 |         17 |         38 |        197 |
+| c:\Users\surya\OneDrive\Desktop\ClassMonitor\backend\teacher-load-test.js                          | JavaScript |        222 |         45 |         48 |        315 |
+| c:\Users\surya\OneDrive\Desktop\ClassMonitor\backend\user-load-test.js                             | JavaScript |        244 |         50 |         52 |        346 |
+| Total                                                                                              |            |    199,540 |        613 |      1,157 |    201,310 |
++----------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+

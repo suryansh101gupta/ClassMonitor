@@ -1,14 +1,19 @@
-import React from 'react'
-import AdminNavbar from '../components/AdminNavbar'
-import AdminHeader from '../components/AdminHeader'
+import React from 'react';
+import AdminNavbar from '../components/AdminNavbar';
+import AdminHeader from '../components/AdminHeader';
+import FAQCarousel from '../components/FAQCarousel';
+import './AdminHome.css';
 
 const AdminHome = () => {
+  const faqs = [];
   return (
-    <div className='flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-200 to-purple-400'>
-      <AdminNavbar/>
-      <AdminHeader/>
+    <div className="home-page">
+      <AdminNavbar />
+      <div className="hero-section">
+          <AdminHeader />
+      </div>
     </div>
-  )
-}
+  );
+};
 
-export default AdminHome
+export default AdminHome;

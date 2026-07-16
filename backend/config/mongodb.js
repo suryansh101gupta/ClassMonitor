@@ -8,7 +8,9 @@ const connectDB = async () => {
 
     try{
         await mongoose.connect(`${process.env.MONGODB_URI}/ClassMonitor`, {
-            maxPoolSize: 400
+            maxPoolSize: 10,      // max 10 simultaneous connections
+            minPoolSize: 2,       // keep 2 warm connections always alive
+            serverSelectionTimeoutMS: 5000,
         });
         console.log('MongoDB connection established with increased pool size');
     }catch(error){

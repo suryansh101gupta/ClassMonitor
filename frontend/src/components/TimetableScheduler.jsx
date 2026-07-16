@@ -425,16 +425,15 @@ const TimetableScheduler = ({ onClose }) => {
     };
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
-            <div className="bg-white w-11/12 md:w-4/5 h-5/6 rounded-2xl p-8 relative flex flex-col overflow-hidden">
-                <button
-                    className="absolute top-4 right-4 text-gray-600 hover:text-black text-2xl"
-                    onClick={onClose}
-                >
-                    ×
-                </button>
+        <div className="w-full bg-white border-3 border-[#111111] shadow-[8px_8px_0px_#FF5722] rounded-xl p-6 relative flex flex-col overflow-hidden min-h-[700px]">
+            <button
+                className="absolute top-4 right-4 text-[#111111] hover:text-white hover:bg-red-500 border-2 border-[#111111] rounded-full w-8 h-8 flex items-center justify-center bg-[#F4F0E6] transition-all font-bold text-lg"
+                onClick={onClose}
+            >
+                ×
+            </button>
 
-                <h2 className="text-2xl font-bold mb-6">Timetable Scheduler</h2>
+            <h2 className="text-2xl font-black mb-6 uppercase tracking-wider text-[#111111]">Timetable Scheduler</h2>
 
                 {error && (
                     <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
@@ -450,7 +449,7 @@ const TimetableScheduler = ({ onClose }) => {
                         <select
                             value={selectedClass?._id || ''}
                             onChange={(e) => setSelectedClass(classes.find(c => c._id === e.target.value))}
-                            className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                            className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                         >
                             <option value="">Select a class...</option>
                             {classes.map(cls => (
@@ -470,7 +469,7 @@ const TimetableScheduler = ({ onClose }) => {
                                 type="time"
                                 value={dayStartTime}
                                 onChange={(e) => setDayStartTime(e.target.value)}
-                                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                             />
                         </div>
                         <div className="flex-1">
@@ -481,7 +480,7 @@ const TimetableScheduler = ({ onClose }) => {
                                 type="time"
                                 value={dayEndTime}
                                 onChange={(e) => setDayEndTime(e.target.value)}
-                                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                             />
                         </div>
                     </div>
@@ -557,7 +556,7 @@ const TimetableScheduler = ({ onClose }) => {
                             <div className="flex gap-2">
                                 <button
                                     onClick={addLectureToSlot}
-                                    className="flex-1 px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600"
+                                    className="flex-1 px-4 py-2 bg-[#FF5722] text-white rounded-lg hover:bg-[#E64A19]"
                                 >
                                     Add Lecture
                                 </button>
@@ -694,7 +693,6 @@ const TimetableScheduler = ({ onClose }) => {
                     </div>
                 )}
             </div>
-        </div>
     );
 };
 

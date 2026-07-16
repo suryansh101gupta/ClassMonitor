@@ -7,12 +7,19 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import TimetableScheduler from './TimetableScheduler';
+import AdminNavbar from './AdminNavbar';
 import './AdminFrontPage.css';
 import { toast } from 'react-toastify';
 
 const AdminFrontPage = () => {
-  const {backendUrl, setIsLoggedin} =  useContext(AppContext);
+  const {backendUrl, setIsLoggedin, isLoggedin} =  useContext(AppContext);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isLoggedin) {
+      navigate('/admin-login');
+    }
+  }, [isLoggedin, navigate]);
   
   // Tab navigation state
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -201,38 +208,48 @@ const AdminFrontPage = () => {
     switch (activeTab) {
       case 'dashboard':
         return (
-          <div className="p-8">
-            <h2 className="text-3xl font-bold text-white mb-6">Welcome to Admin Dashboard</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <div className="bg-gray-800 bg-opacity-50 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-purple-500 border-opacity-20">
-                <div className="text-2xl mb-2">👥</div>
-                <h3 className="text-lg font-semibold text-white">Manage Teachers</h3>
-                <p className="text-gray-400 text-sm mt-2">Assign subjects to teachers</p>
-              </div>
-              <div className="bg-gray-800 bg-opacity-50 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-purple-500 border-opacity-20">
-                <div className="text-2xl mb-2">📚</div>
-                <h3 className="text-lg font-semibold text-white">Manage Subjects</h3>
-                <p className="text-gray-400 text-sm mt-2">View and organize subjects</p>
-              </div>
-              <div className="bg-gray-800 bg-opacity-50 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-purple-500 border-opacity-20">
-                <div className="text-2xl mb-2">📅</div>
-                <h3 className="text-lg font-semibold text-white">Timetable</h3>
-                <p className="text-gray-400 text-sm mt-2">Create and manage schedules</p>
+          <div className="tab-content-wrapper">
+          <div className="tab-content-header">
+            <h2 className="tab-title">Welcome to Admin Dashboard</h2>
+          </div>
+          <div className="stats-grid">
+            <div className="stat-card">
+              <div className="stat-icon">👥</div>
+              <div className="stat-info">
+                <h3>Manage Teachers</h3>
+                <p>Assign subjects to teachers</p>
               </div>
             </div>
+            <div className="stat-card">
+              <div className="stat-icon">📚</div>
+              <div className="stat-info">
+                <h3>Manage Subjects</h3>
+                <p>View and organize subjects</p>
+              </div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-icon">📅</div>
+              <div className="stat-info">
+                <h3>Timetable</h3>
+                <p>Create and manage schedules</p>
+              </div>
+            </div>
+          </div>
           </div>
         );
         
       case 'assignments':
         return (
-          <div className="p-8">
-            <h2 className="text-3xl font-bold text-white mb-6">Assign Subjects to Teachers</h2>
-            <button
-              onClick={() => setIsAssignmentModalOpen(true)}
-              className="bg-gradient-to-r from-purple-600 to-purple-700 text-white px-6 py-3 rounded-xl hover:from-purple-700 hover:to-purple-800 transition-all duration-300 font-medium shadow-lg hover:shadow-purple-500 hover:shadow-lg"
-            >
-              Open Assignment Panel
-            </button>
+          <div className="tab-content-wrapper">
+            <div className="tab-content-header">
+              <h2 className="tab-title">Assign Subjects to Teachers</h2>
+              <button
+                onClick={() => setIsAssignmentModalOpen(true)}
+                className="minimal-btn primary-btn mt-4"
+              >
+                Open Assignment Panel
+              </button>
+            </div>
           </div>
         );
         
@@ -241,9 +258,11 @@ const AdminFrontPage = () => {
         
       case 'calendar':
         return (
-          <div className="p-8">
-            <h2 className="text-3xl font-bold text-gray-800 mb-6">Academic Calendar</h2>
-            <div className="bg-white rounded-lg shadow-lg p-6">
+          <div className="tab-content-wrapper">
+            <div className="tab-content-header">
+              <h2 className="tab-title">Academic Calendar</h2>
+            </div>
+            <div className="content-card">
               <FullCalendar
                 plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
                 initialView="timeGridWeek"
@@ -261,19 +280,21 @@ const AdminFrontPage = () => {
         
       case 'subjects':
         return (
-          <div className="p-8">
-            <h2 className="text-3xl font-bold text-white mb-6">Create Subject</h2>
-            <div className="bg-gray-800 bg-opacity-50 backdrop-blur-sm rounded-xl shadow-lg p-6 border border-purple-500 border-opacity-20 ">
-              <div className="flex items-center gap-4">
-                <input
-                  type="text"
-                  placeholder="Enter subject name"
-                  className="px-4 py-2 rounded bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500 w-64"
-                  value={subjectName}
-                  onChange={(e) => setSubjectName(e.target.value)}
-                />
-                <button className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded" onClick={createSubject}> Create a new Subject </button>
-              </div>
+          <div className="tab-content-wrapper">
+            <div className="tab-content-header">
+              <h2 className="tab-title">Create Subject</h2>
+            </div>
+            <div className="content-card flex-form">
+              <input
+                type="text"
+                placeholder="Enter subject name"
+                className="minimal-input"
+                value={subjectName}
+                onChange={(e) => setSubjectName(e.target.value)}
+              />
+              <button className="minimal-btn primary-btn" onClick={createSubject}>
+                Create Subject
+              </button>
             </div>
           </div>
         );
@@ -285,44 +306,47 @@ const AdminFrontPage = () => {
 
   return (
     <div className="admin-front-page">
-      {/* Top Right Buttons */}
-      <div className="absolute top-4 right-4 flex gap-2 z-10">
-        <button
-          onClick={() => navigate('/admin-home')}
-          className="flex items-center gap-2 bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-all duration-200"
-        >
-          <i className="ri-arrow-left-line"></i>
-          Back
-        </button>
-        <button
-          onClick={handleLogout}
-          className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-all duration-200"
-        >
-          <i className="ri-logout-box-line"></i>
-          Logout
-        </button>
+      {/* Abstract Background Shapes */}
+      <div className="abstract-shape shape-circle"></div>
+      <div className="abstract-shape shape-square"></div>
+      <div className="abstract-shape shape-triangle"></div>
+
+      {/* Top Bar - Unified from AdminNavbar */}
+      <div className="z-50 relative">
+        <AdminNavbar />
       </div>
 
-      {/* Tab Navigation */}
-      <div className="tab-navigation">
-        <div className="tab-list">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`tab-button ${activeTab === tab.id ? 'active' : 'inactive'}`}
-            >
-              <span className="tab-icon">{tab.icon}</span>
-              <span className="tab-label">{tab.label}</span>
-            </button>
-          ))}
+      <div className="main-container">
+        {/* Left Sidebar */}
+        <div className="sidebar">
+          <div className="sidebar-tabs">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`sidebar-tab ${activeTab === tab.id ? 'active' : ''}`}
+              >
+                <span className="tab-icon">{tab.icon}</span>
+                <span className="tab-label">{tab.label}</span>
+                {activeTab === tab.id && <div className="tab-indicator"></div>}
+              </button>
+            ))}
+          </div>
+          <div className="sidebar-decoration"></div>
+        </div>
+
+        {/* Content Area */}
+        <div className="content-area">
+          <div className="content-wrapper">
+            {renderTabContent()}
+          </div>
         </div>
       </div>
 
-      {/* Content Area */}
-      <div className="content-area">
-        {renderTabContent()}
-      </div>
+      {/* Abstract Decorative Shapes */}
+      <div className="shape shape-1"></div>
+      <div className="shape shape-2"></div>
+      <div className="shape shape-3"></div>
 
       {/* Assignment Modal */}
       {isAssignmentModalOpen && (
@@ -347,13 +371,13 @@ const AdminFrontPage = () => {
               {/* Teachers List */}
               <div className="teachers-panel">
                 <h3 className="panel-title">Select Teacher</h3>
-                <div className="search-container border-white">
+                <div className="search-container">
                   <input
                     type="text"
                     placeholder="Search by name or email..."
                     value={searchTeacher}
                     onChange={(e) => setSearchTeacher(e.target.value)}
-                    className="w-full px-5 py-3 mb-5 bg-[#1A1B26] text-white rounded-xl border-2 border-purple-500 placeholder-gray-500 outline-none focus:border-purple-400 focus:ring-4 focus:ring-purple-500/20 transition-all duration-300"
+                    className="minimal-input w-full mb-5"
                   />
                 </div>
                 {loading && !teachers.length ? (
@@ -381,13 +405,13 @@ const AdminFrontPage = () => {
               {/* Subjects List */}
               <div className="subjects-panel">
                 <h3 className="panel-title">Select Subjects</h3>
-                <div className="search-container border-white">
+                <div className="search-container">
                   <input
                     type="text"
                     placeholder="Search subjects..."
                     value={searchSubject}
                     onChange={(e) => setSearchSubject(e.target.value)}
-                    className="w-full px-5 py-3 mb-5 bg-[#1A1B26] text-white rounded-xl border-2 border-purple-500 placeholder-gray-500 outline-none focus:border-purple-400 focus:ring-4 focus:ring-purple-500/20 transition-all duration-300"
+                    className="minimal-input w-full mb-5"
                   />
                 </div>
                 {selectedTeacher ? (

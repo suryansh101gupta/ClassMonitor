@@ -3,8 +3,9 @@ import axios from 'axios';
 import { AppContext } from '../context/AppContext';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import './TimetableViewer.css';
 
-const TimetableViewer = () => {
+const TimetableViewer = ({ isEmbedded = false }) => {
 
   const navigate = useNavigate();
   const { backendUrl } = useContext(AppContext);
@@ -40,7 +41,7 @@ const TimetableViewer = () => {
   const handleGetTimetable = async () => {
 
     if (!classId || !startDate || !endDate) {
-      setError('Please fill all required fields');
+      setError('Please fill in all fields');
       return;
     }
 
@@ -67,128 +68,121 @@ const TimetableViewer = () => {
     }
   };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-200 to-purple-400 flex justify-center items-center p-4">
+  const content = (
+    <div className={!isEmbedded ? "content-wrapper" : "w-full"}>
+      <div className="form-container">
+        <h2 className="page-title">Timetable Viewer</h2>
+        
+        <div className="content-card">
+          <div className="form-grid">
+            <div className="form-group">
+              <label className="form-label">Select Class</label>
+              <select
+                value={classId}
+                onChange={(e) => setClassId(e.target.value)}
+                className="minimal-input"
+              >
+                <option value="">Choose Class</option>
+                {classes?.map(c => (
+                  <option key={c._id} value={c._id}>{c.name}</option>
+                ))}
+              </select>
+            </div>
 
-      {/* 🔙 Back Button */}
-      <button 
-        onClick={() => navigate(-1)} 
-        className='absolute top-5 left-5 px-4 py-2 rounded-full 
-                   bg-[#333A5C] text-indigo-300 border border-indigo-500/30 
-                   hover:bg-indigo-600 hover:text-white transition'
-      >
-        ← Back
-      </button>
+            <div className="form-group">
+              <label className="form-label">Start Date</label>
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="minimal-input"
+              />
+            </div>
 
-      <div className="bg-slate-900 p-8 rounded-2xl w-full max-w-5xl text-indigo-300 shadow-xl">
-
-        <h2 className="text-3xl text-white text-center mb-6">
-          📅 Timetable Viewer
-        </h2>
-
-        {/* INPUT SECTION */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-
-          {/* CLASS */}
-          <div>
-            <label className="text-white text-sm mb-1 block">
-              Select Class
-            </label>
-            <select
-              value={classId}
-              onChange={(e) => setClassId(e.target.value)}
-              className="w-full p-3 bg-gray-800 text-white rounded"
-            >
-              <option value="">-- Choose Class --</option>
-              {classes?.map(c => (
-                <option key={c._id} value={c._id}>{c.name}</option>
-              ))}
-            </select>
+            <div className="form-group">
+              <label className="form-label">End Date</label>
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="minimal-input"
+              />
+            </div>
           </div>
 
-          {/* START DATE */}
-          <div>
-            <label className="text-white text-sm mb-1 block">
-              Start Date
-            </label>
-            <input
-              type="date"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              className="w-full p-3 bg-gray-800 text-white rounded"
-            />
-          </div>
+          {error && (
+            <div className="error-message">
+              {error}
+            </div>
+          )}
 
-          {/* END DATE */}
-          <div>
-            <label className="text-white text-sm mb-1 block">
-              End Date
-            </label>
-            <input
-              type="date"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-              className="w-full p-3 bg-gray-800 text-white rounded"
-            />
-          </div>
-
+          <button
+            onClick={handleGetTimetable}
+            className="minimal-btn"
+            disabled={loading}
+          >
+            {loading ? 'Loading...' : 'View Timetable'}
+          </button>
         </div>
 
-        {/* BUTTON */}
-        <button
-            onClick={() => navigate('/teacher-login')}
-        //   onClick={handleGetTimetable}
-          className="w-full mt-6 bg-indigo-600 py-3 rounded-full text-white font-medium hover:bg-indigo-700 transition"
-        >
-          {loading ? 'Loading...' : 'View Timetable'}
-        </button>
-
-        {/* ERROR */}
-        {error && (
-          <div className="bg-red-500 text-white p-2 mt-4 rounded text-center">
-            {error}
-          </div>
-        )}
-
-        {/* TABLE */}
         {timetable.length > 0 && (
-          <div className="mt-8 overflow-auto">
-
-            <h3 className="text-white mb-3 text-lg">
-              📘 Timetable Records
-            </h3>
-
-            <table className="w-full text-white text-center border border-gray-600">
-
-              <thead>
-                <tr className="bg-gray-800">
-                  <th className="p-3">Date</th>
-                  <th>Subject</th>
-                  <th>Teacher</th>
-                  <th>Start Time</th>
-                  <th>End Time</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {timetable.map((t, i) => (
-                  <tr key={i} className="border-t border-gray-700">
-                    <td>{new Date(t.start_time).toLocaleDateString()}</td>
-                    <td>{t.subject_name}</td>
-                    <td>{t.teacher_name}</td>
-                    <td>{new Date(t.start_time).toLocaleTimeString()}</td>
-                    <td>{new Date(t.end_time).toLocaleTimeString()}</td>
+          <div className="content-card">
+            <h3 className="card-title">Timetable Records</h3>
+            <div className="table-container">
+              <table className="timetable-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Subject</th>
+                    <th>Teacher</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
                   </tr>
-                ))}
-              </tbody>
-
-            </table>
-
+                </thead>
+                <tbody>
+                  {timetable.map((t, i) => (
+                    <tr key={i}>
+                      <td>{new Date(t.start_time).toLocaleDateString()}</td>
+                      <td>{t.subject_name}</td>
+                      <td>{t.teacher_name}</td>
+                      <td>{new Date(t.start_time).toLocaleTimeString()}</td>
+                      <td>{new Date(t.end_time).toLocaleTimeString()}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
-
       </div>
+    </div>
+  );
 
+  if (isEmbedded) {
+    return content;
+  }
+
+  return (
+    <div className="timetable-viewer-page">
+      <div className="abstract-shape shape-circle"></div>
+      <div className="abstract-shape shape-square"></div>
+      <div className="abstract-shape shape-triangle"></div>
+
+      <div className="top-bar">
+        <div className="top-bar-left" onClick={() => navigate('/')}>
+          <img src="/cm_logo.png" alt="ClassMonitor" className="h-10 w-auto" />
+          <span className="brand-name">ClassMonitor</span>
+        </div>
+        <div className="top-bar-right">
+          <button
+            onClick={() => navigate(-1)}
+            className="back-button"
+          >
+            <i className="ri-arrow-left-line"></i> Back
+          </button>
+        </div>
+      </div>
+      {content}
     </div>
   );
 };

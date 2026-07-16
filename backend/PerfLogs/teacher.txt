@@ -1,0 +1,98 @@
+█ THRESHOLDS
+
+    http_req_duration
+    ✗ 'p(95)<650' p(95)=1.44s
+
+    http_req_failed
+    ✓ 'rate<0.05' rate=0.04%
+
+    teacher_auth_latency
+    ✗ 'p(95)<950' p(95)=1533.076843
+
+    teacher_cache_hit_latency
+    ✓ 'p(95)<130' p(95)=127.873099
+
+    teacher_cache_hit_rate
+    ✗ 'rate>0.6' rate=57.58%
+
+    teacher_db_read_latency
+    ✗ 'p(95)<550' p(95)=1527.70982
+
+    teacher_db_write_latency
+    ✓ 'p(95)<750' p(95)=0
+
+    teacher_error_rate
+    ✗ 'rate<0.05' rate=24.62%
+
+
+  █ TOTAL RESULTS
+
+    checks_total.......: 72326  239.960157/s
+    checks_succeeded...: 90.28% 65297 out of 72326
+    checks_failed......: 9.71%  7029 out of 72326
+
+    ✓ setup: teacher login 200
+    ✗ teacher register: status 201
+      ↳  99% — ✓ 2881 / ✗ 12
+    ✗ teacher register: success true
+      ↳  99% — ✓ 2881 / ✗ 12
+    ✗ teacher register: has token
+      ↳  99% — ✓ 2881 / ✗ 12
+    ✗ teacher register: latency < 1s
+      ↳  74% — ✓ 2166 / ✗ 727
+    ✓ teacher login: status 200
+    ✓ teacher login: success true
+    ✗ teacher login: has token field
+      ↳  0% — ✓ 0 / ✗ 2893
+    ✓ teacher login: sets cookie
+    ✗ teacher login: latency < 1s
+      ↳  96% — ✓ 2797 / ✗ 96
+    ✗ teachers: status 200
+      ↳  99% — ✓ 2892 / ✗ 1
+    ✗ teachers: has data array
+      ↳  99% — ✓ 2892 / ✗ 1
+    ✗ teachers: latency < 500ms
+      ↳  58% — ✓ 1686 / ✗ 1207
+    ✗ teachers: cache working
+      ↳  53% — ✓ 1551 / ✗ 1342
+    ✓ get-attendance: status 200
+    ✗ get-attendance: latency < 600ms
+      ↳  99% — ✓ 2870 / ✗ 23
+    ✓ get-lectures: status 200
+    ✗ get-lectures: latency < 600ms
+      ↳  99% — ✓ 2891 / ✗ 2
+    ✓ subjects-cache: status 200
+    ✓ subjects-cache: has data
+    ✗ subjects-cache: cache hit
+      ↳  86% — ✓ 2488 / ✗ 405
+    ✓ classes-cache: status 200
+    ✓ classes-cache: has data
+    ✗ classes-cache: cache hit
+      ↳  89% — ✓ 2597 / ✗ 296
+    ✓ teacher logout: status 200
+    ✓ teacher logout: success true
+
+    CUSTOM
+    teacher_auth_latency...........: avg=451.423915  min=2.044268   med=133.18324 max=12989.192427 p(90)=961.367078  p(95)=1533.076843    
+    teacher_cache_hit_latency......: avg=40.525439   min=2.988585   med=21.579787 max=149.745273   p(90)=108.729501  p(95)=127.873099     
+    teacher_cache_hit_rate.........: 57.58% 4998 out of 8679
+    teacher_cache_miss_latency.....: avg=1103.987851 min=150.020472 med=457.10606 max=13064.027007 p(90)=2695.945302 p(95)=4280.723687    
+    teacher_db_read_latency........: avg=328.100539  min=2.253552   med=62.97164  max=13064.027007 p(90)=620.536585  p(95)=1527.70982     
+    teacher_db_write_latency.......: avg=0           min=0          med=0         max=0            p(90)=0           p(95)=0
+    teacher_error_rate.............: 24.62% 5700 out of 23144
+
+    HTTP
+    http_req_duration..............: avg=375.27ms    min=2.04ms     med=101.28ms  max=13.06s       p(90)=792.76ms    p(95)=1.44s
+      { expected_response:true }...: avg=374.97ms    min=2.04ms     med=101.3ms   max=13.06s       p(90)=792.84ms    p(95)=1.44s
+    http_req_failed................: 0.04%  13 out of 26038
+    http_reqs......................: 26038  86.38778/s
+
+    EXECUTION
+    iteration_duration.............: avg=5.79s       min=2.17s      med=4.55s     max=18.61s       p(90)=10.26s      p(95)=14.95s
+    iterations.....................: 2893   9.598274/s
+    vus............................: 2      min=1             max=100
+    vus_max........................: 100    min=100           max=100
+
+    NETWORK
+    data_received..................: 530 MB 1.8 MB/s
+    data_sent......................: 12 MB  38 kB/s

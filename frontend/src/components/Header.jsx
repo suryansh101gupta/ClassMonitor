@@ -15,14 +15,21 @@ const Header = () => {
         Hello {userData ? userData.name :''}! <i className="ri-shake-hands-fill"></i>
       </h1>
       <h2 className='text-3xl sm:text-5xl font-semibold mb-4'>Welcome to ClassMonitor</h2>
-      <p className='mb-8 max-w-md'>Welcome to ClassMonitor blah blah blah welcome blah blah</p>
-      {isLoggedin && 
-        <button 
-        onClick={() => {navigate('/timetable-viewer')}} 
-        className='border border-gray-500 rounded-full px-8 py-2.5 hover:bg-green-700 cursor-pointer'>
-        Get Started
-      </button>
-      }
+      <p className='mb-8 max-w-md'>Welcome to ClassMonitor!</p>
+      {/* {isLoggedin && 
+        <div className='flex gap-3 flex-wrap justify-center'>
+          <button 
+            onClick={() => {navigate('/timetable-viewer')}} 
+            className='border border-gray-500 rounded-full px-8 py-2.5 hover:bg-green-700 cursor-pointer'>
+            Get Started
+          </button>
+          <button
+            onClick={() => {navigate('/my-attendance')}}
+            className='border-2 border-[#FF5722] rounded-full px-8 py-2.5 bg-[#FF5722] text-[#111111] font-bold hover:shadow-[3px_3px_0px_#111111] transition-all cursor-pointer flex items-center gap-2'>
+            <i className="ri-bar-chart-grouped-line" /> My Attendance
+          </button>
+        </div>
+      }  */}
     </div>
   )
 }

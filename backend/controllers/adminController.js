@@ -55,11 +55,6 @@ export const loginAdmin = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const stats = await adminModel.find({ email }).explain("executionStats");
-
-    console.log(stats);
-
-
     const admin = await adminModel.findOne({ email });
     if (!admin) {
       return res.status(400).json({ success: false, message: "Invalid credentials" });
@@ -169,13 +164,11 @@ export const assignSubjectToTeacher = async (req, res) => {
       });
     }
 
-    // 1. Validate teacher
     const teacher = await teacherModel.findById(teacherId);
     if (!teacher) {
       return res.status(404).json({ success: false, message: "Teacher not found" });
     }
 
-    // 2. Validate all subjects
     const subjects = await subjectModel.find({ '_id': { $in: subjectIds } });
     if (subjects.length !== subjectIds.length) {
       return res.status(404).json({ 
@@ -184,7 +177,7 @@ export const assignSubjectToTeacher = async (req, res) => {
       });
     }
 
-    // 3. Filter out already assigned subjects
+    // Filter out already assigned subjects and return only new subjects to be assigned
     const newSubjectIds = subjectIds.filter(id => !teacher.subjects.includes(id));
     
     if (newSubjectIds.length === 0) {
@@ -194,12 +187,12 @@ export const assignSubjectToTeacher = async (req, res) => {
       });
     }
 
-    // 4. Update Mongo
+    // Update Mongo
     teacher.subjects.push(...newSubjectIds);
     await teacher.save();
 
     try {
-      // 5. Update SQL mapping for new subjects only
+      // Update SQL mapping for new subjects only
       const placeholders = newSubjectIds.map(() => '(?, ?)').join(', ');
       const values = newSubjectIds.flatMap(subjectId => [teacherId, subjectId]);
       

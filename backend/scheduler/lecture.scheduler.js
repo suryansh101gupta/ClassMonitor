@@ -3,10 +3,16 @@ import db from "../config/mysql.js"; // your mysql connection
 import "../globals.js";
 
 // run every minute
-cron.schedule("* * * * *", async () => {
+// cron.schedule("* * * * *", async () => {
+cron.schedule("* 6-20 * * 0-6", async () => {
   try {
-    // Use global class_id if available, otherwise default to 3
-    const classId = '69c2c4076d78033217584325';
+    // Use global class_id set by the camera's frame-result POST
+    // const classId = global.activeClassId;
+    const classId = '69d0bf0ec218515d3b26f38c';
+    if (!classId) {
+      console.log("[SCHED] lecture check: no active classId set, skipping.");
+      return;
+    }
     
     const [rows] = await db.query(`
       SELECT * FROM lectures
